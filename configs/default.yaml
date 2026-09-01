@@ -1,0 +1,44 @@
+seed: 61
+dataset: kuairand-pure
+positive_label: is_click
+metrics: [ndcg@10, recall@50]
+primary_metric: ndcg@10
+k_ndcg: 10
+k_recall: 50
+
+# Official date split from TechJam 2026 Track 2.
+# Train: standard logs 2022-04-08 .. 2022-04-21
+# Val / test: standard logs 2022-04-22 .. 2022-05-08, first 50% / last 50% by time_ms
+split:
+  train_dates: [20220408, 20220421]
+  later_log: log_standard_4_22_to_5_08_pure.csv
+  val_fraction: 0.5
+  sort_key: time_ms
+
+# Official starter kit did not publish epsilon / N. Freeze ours.
+convergence:
+  epsilon: 0.001
+  patience: 3
+
+train:
+  batch_size: 256
+  embed_dim: 16
+  mlp_dims: [64, 32]
+  dropout: 0.1
+  lr: 0.001
+  weight_decay: 0.0
+  max_epochs: 6
+  early_stop: 2
+  num_workers: 0
+  amp: true
+  # CPU path (current box is torch+cpu): keep DeepFM as a real baseline without a multi-hour run.
+  cpu_max_epochs: 2
+  cpu_subsample_rows: 250000
+
+paths:
+  raw_dir: data/raw/KuaiRand-Pure/data
+  processed_dir: data/processed
+  log_path: logs/runs.jsonl
+  results_dir: results
+  baseline_path: results/baseline.json
+  val_best_path: results/val_best.json

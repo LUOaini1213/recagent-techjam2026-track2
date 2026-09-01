@@ -1,0 +1,23 @@
+{
+  "dataset": "KuaiRand-Pure",
+  "label": "long_view",
+  "task": "within-user ranking over logged impressions",
+  "split": {
+    "train": "20220408-20220421",
+    "valid": "20220422-20220428",
+    "test": "20220429-20220508"
+  },
+  "metrics": ["GAUC", "nDCG@5"],
+  "primary": "mean(GAUC, nDCG@5)",
+  "convergence_rule": {"epsilon": 0.002, "N": 3},
+  "scores": {
+    "item_popularity": {
+      "valid": {"GAUC": 0.6387, "nDCG@5": 0.5227, "primary": 0.5807},
+      "test": {"GAUC": 0.6308, "nDCG@5": 0.5121, "primary": 0.5715}
+    },
+    "fm_official": {
+      "valid": {"GAUC": 0.6674, "nDCG@5": 0.5357, "primary": 0.6016},
+      "test": {"GAUC": 0.661, "nDCG@5": 0.5282, "primary": 0.5946}
+    }
+  }
+}

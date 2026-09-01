@@ -1,0 +1,23 @@
+{
+  "model": "gbdt",
+  "ndcg@10": 0.8340751897527214,
+  "ndcg@5": 0.7933435656471036,
+  "recall@50": 0.9997140648552406,
+  "auc": 0.7438387040166342,
+  "primary": 0.8340751897527214,
+  "score": 0.9168946273039811,
+  "n_users": 23199,
+  "n_scored_users": 18617,
+  "impressions": {
+    "n_users": 23199,
+    "n_rows": 147749,
+    "list_len_p50": 4.0,
+    "list_len_p90": 14.0,
+    "frac_list_le_50": 0.9979309452993663
+  },
+  "vs_popularity_test": {
+    "popularity_ndcg@10": 0.8155875572333724,
+    "delta_ndcg@10": 0.018487632519349
+  },
+  "note": "One-shot hidden test of frozen LightGBM. Popularity scored on the same test split for a reference delta only; DeepFM was not re-scored here because the local deepfm.pt may be from an older run. Test labels were not used for training or blend weights."
+}

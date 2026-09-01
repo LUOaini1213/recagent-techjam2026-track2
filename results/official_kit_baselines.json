@@ -1,0 +1,16 @@
+{
+  "protocol": "kuairand-starter-kit evaluate.py",
+  "label": "long_view",
+  "primary": "mean(GAUC, nDCG@5)",
+  "split": {"train": "20220408-20220421", "valid": "20220422-20220428", "test": "20220429-20220508"},
+  "rows": {"train": 1141112, "valid": 124909, "test": 170588},
+  "published": {
+    "pop": {"valid_primary": 0.5807, "test_primary": 0.5715},
+    "fm": {"valid_primary": 0.6016, "test_primary": 0.5946}
+  },
+  "reproduced_seed0": {
+    "pop": {"valid": {"GAUC": 0.6387, "nDCG@5": 0.5227, "primary": 0.5807}, "test": {"GAUC": 0.6308, "nDCG@5": 0.5121, "primary": 0.5715}},
+    "fm": {"valid": {"GAUC": 0.6671, "nDCG@5": 0.5358, "primary": 0.6015}, "test": {"GAUC": 0.6621, "nDCG@5": 0.5286, "primary": 0.5953}}
+  },
+  "note": "FM valid 0.6015 vs published 0.6016; test 0.5953 vs 0.5946 (within published seed std 0.0008)."
+}

@@ -1,0 +1,133 @@
+{
+  "name": "p_md50",
+  "features": "base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf,fm",
+  "objective": "binary",
+  "past": true,
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.02,
+    "num_leaves": 63,
+    "min_data_in_leaf": 50,
+    "feature_fraction": 0.7,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l2": 1.0,
+    "seed": 0,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None"
+  },
+  "best_iter": 330,
+  "n_features": 89,
+  "valid": {
+    "GAUC": 0.67207,
+    "nDCG@5": 0.537561,
+    "primary": 0.604815,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "fm_score",
+      3735625.3
+    ],
+    [
+      "onehot_feat3",
+      706261.8
+    ],
+    [
+      "tab",
+      667213.3
+    ],
+    [
+      "utab_lv_rate",
+      495846.7
+    ],
+    [
+      "onehot_feat8",
+      399016.6
+    ],
+    [
+      "s_longtime_rate",
+      280586.7
+    ],
+    [
+      "u_click_rate",
+      85739.3
+    ],
+    [
+      "s_valid_rate",
+      53979.3
+    ],
+    [
+      "u_lv_rate",
+      51836.5
+    ],
+    [
+      "utab_cnt",
+      29910.3
+    ],
+    [
+      "ua_lv_rate",
+      28066.4
+    ],
+    [
+      "s_shorttime_rate",
+      23507.5
+    ],
+    [
+      "tag1",
+      16474.5
+    ],
+    [
+      "hour",
+      14956.6
+    ],
+    [
+      "v_lv_rate",
+      13488.7
+    ],
+    [
+      "a_lv_rate",
+      12829.2
+    ],
+    [
+      "u_imp",
+      11791.2
+    ],
+    [
+      "u_play_ratio",
+      7041.9
+    ],
+    [
+      "onehot_feat7",
+      5151.1
+    ],
+    [
+      "s_follow_rate",
+      4851.5
+    ],
+    [
+      "v_click_rate",
+      3691.7
+    ],
+    [
+      "ut_lv_rate",
+      3614.6
+    ],
+    [
+      "s_collect_rate",
+      3584.3
+    ],
+    [
+      "s_play_cnt",
+      3504.3
+    ],
+    [
+      "onehot_feat1",
+      3387.9
+    ]
+  ],
+  "wall_seconds": 139.7
+}

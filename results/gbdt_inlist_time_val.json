@@ -1,0 +1,25 @@
+{
+  "ndcg@10": 0.8408636011521071,
+  "ndcg@5": 0.798636754975836,
+  "recall@50": 0.9998844349012362,
+  "auc": 0.7568207313028463,
+  "primary": 0.8408636011521071,
+  "score": 0.9203740180266717,
+  "n_users": 23354,
+  "n_scored_users": 19243,
+  "impressions": {
+    "n_users": 23354,
+    "n_rows": 147748,
+    "list_len_p50": 5.0,
+    "list_len_p90": 13.0,
+    "frac_list_le_50": 0.9991007964374411
+  },
+  "model": "gbdt_inlist_time",
+  "wall_seconds": 71.246,
+  "device": {
+    "torch": "2.7.1+cu126",
+    "cuda_available": true,
+    "device_name": "NVIDIA GeForce GTX 1650",
+    "gpu_count": 1
+  }
+}

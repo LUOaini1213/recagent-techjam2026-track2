@@ -1,0 +1,133 @@
+{
+  "name": "p3_ff05_l230",
+  "features": "base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf,fm",
+  "objective": "binary",
+  "past": true,
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.02,
+    "num_leaves": 63,
+    "min_data_in_leaf": 200,
+    "feature_fraction": 0.5,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l2": 30.0,
+    "seed": 0,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None"
+  },
+  "best_iter": 360,
+  "n_features": 89,
+  "valid": {
+    "GAUC": 0.674163,
+    "nDCG@5": 0.538662,
+    "primary": 0.606412,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "fm_score",
+      3096079.2
+    ],
+    [
+      "tab",
+      808989.8
+    ],
+    [
+      "onehot_feat3",
+      577150.3
+    ],
+    [
+      "utab_lv_rate",
+      570073.2
+    ],
+    [
+      "s_longtime_rate",
+      350170.7
+    ],
+    [
+      "onehot_feat8",
+      306056.8
+    ],
+    [
+      "s_valid_rate",
+      133178.3
+    ],
+    [
+      "u_lv_rate",
+      122161.8
+    ],
+    [
+      "u_click_rate",
+      116681.4
+    ],
+    [
+      "v_lv_rate",
+      52695.7
+    ],
+    [
+      "ua_lv_rate",
+      48982.2
+    ],
+    [
+      "s_shorttime_rate",
+      41270.2
+    ],
+    [
+      "utab_cnt",
+      36848.8
+    ],
+    [
+      "a_lv_rate",
+      32407.6
+    ],
+    [
+      "tag1",
+      28820.4
+    ],
+    [
+      "ud_lv_rate",
+      26735.4
+    ],
+    [
+      "u_play_ratio",
+      23659.3
+    ],
+    [
+      "onehot_feat7",
+      19129.7
+    ],
+    [
+      "hour",
+      15492.7
+    ],
+    [
+      "u_imp",
+      11564.5
+    ],
+    [
+      "v_click_rate",
+      7628.1
+    ],
+    [
+      "s_play_progress",
+      5460.8
+    ],
+    [
+      "s_play_cnt",
+      5386.8
+    ],
+    [
+      "s_follow_rate",
+      5327.7
+    ],
+    [
+      "onehot_feat1",
+      5195.3
+    ]
+  ],
+  "wall_seconds": 126.6
+}

@@ -1,0 +1,45 @@
+{
+  "designation": "validation-best checkpoint at run stop (FAQ 2.9.1c)",
+  "recipe": {
+    "weights": {
+      "gbdt5v2": 0.8,
+      "rank3": 0.2
+    },
+    "gbdt5v2_members": [
+      "p4_ease",
+      "p4_ease_s1",
+      "p4_ease_s2",
+      "p4_ease_s3",
+      "p4_ease_s4"
+    ],
+    "rank3_members": [
+      "p_rank_t10",
+      "p3_rank_ff05",
+      "p3_rank_s1"
+    ],
+    "combine": "rank01-transform each member, equal-weight within group, then weighted sum"
+  },
+  "baseline": {
+    "fm_published": {
+      "valid": 0.6016,
+      "test": 0.5946
+    }
+  },
+  "metrics": {
+    "valid": {
+      "GAUC": 0.676221,
+      "nDCG@5": 0.539954,
+      "primary": 0.608088,
+      "users": 22377,
+      "rows": 124909
+    },
+    "test": {
+      "GAUC": 0.66965,
+      "nDCG@5": 0.533322,
+      "primary": 0.601486,
+      "users": 23875,
+      "rows": 170588
+    }
+  },
+  "delta_test_primary_vs_published_fm": 0.006886
+}

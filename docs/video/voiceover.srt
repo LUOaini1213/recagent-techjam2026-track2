@@ -1,0 +1,224 @@
+1
+00:00:00,075 --> 00:00:02,713
+Every machine learning engineer knows this loop.
+
+2
+00:00:03,100 --> 00:00:04,862
+Look at the data. Build a feature.
+
+3
+00:00:05,275 --> 00:00:09,263
+Train. Evaluate. Realize you were wrong, and do it again.
+
+4
+00:00:09,675 --> 00:00:12,675
+It is the biggest time sink in recommender work, and
+
+5
+00:00:12,825 --> 00:00:14,475
+almost none of it is creative.
+
+6
+00:00:15,100 --> 00:00:18,125
+So we built an agent that runs the loop by itself.
+
+7
+00:00:18,538 --> 00:00:21,775
+It reads the problem, reproduces the official baseline,
+
+8
+00:00:22,200 --> 00:00:26,500
+then proposes its own hypotheses, writes the code, trains,
+
+9
+00:00:26,512 --> 00:00:28,562
+and scores itself on the official metric.
+
+10
+00:00:28,962 --> 00:00:32,962
+Twenty-three iterations. Zero lines of code written by a
+
+11
+00:00:32,975 --> 00:00:33,425
+human.
+
+12
+00:00:35,093 --> 00:00:36,869
+The agent drives four components.
+
+13
+00:00:37,231 --> 00:00:40,444
+A feature builder that computes every statistic strictly
+
+14
+00:00:40,456 --> 00:00:44,030
+from the past. A model layer: gradient boosting, a
+
+15
+00:00:44,042 --> 00:00:47,091
+factorization machine, and item-item models.
+
+16
+00:00:47,465 --> 00:00:50,047
+The official evaluator, which we never modify.
+
+17
+00:00:50,421 --> 00:00:53,586
+And a reflection step that reads the scores and picks what
+
+18
+00:00:53,586 --> 00:00:54,381
+to try next.
+
+19
+00:00:55,106 --> 00:00:58,384
+Here is a full run. The agent starts from the raw KuaiRand
+
+20
+00:00:58,384 --> 00:01:00,920
+logs and builds its own feature cache.
+
+21
+00:01:01,297 --> 00:01:04,870
+One point one million training rows, matching the official
+
+22
+00:01:04,882 --> 00:01:09,340
+split exactly. Every statistic uses only strictly earlier
+
+23
+00:01:09,340 --> 00:01:12,158
+days. That one discipline was our biggest single gain.
+
+24
+00:01:13,085 --> 00:01:16,192
+Now it trains, and scores itself with the organizers'
+
+25
+00:01:16,204 --> 00:01:18,316
+evaluator, which we never modify.
+
+26
+00:01:18,692 --> 00:01:22,515
+Watch the log. Every iteration records a hypothesis, the
+
+27
+00:01:22,515 --> 00:01:25,294
+reason behind it, the code change it applied, and the
+
+28
+00:01:25,294 --> 00:01:27,090
+validation score that came back.
+
+29
+00:01:28,100 --> 00:01:29,812
+This is the moment that matters.
+
+30
+00:01:30,225 --> 00:01:33,625
+The agent adds collaborative filtering features, and the
+
+31
+00:01:33,625 --> 00:01:37,500
+score collapses. It inspects feature importance, sees one
+
+32
+00:01:37,513 --> 00:01:40,737
+feature with four times the gain of anything else, and
+
+33
+00:01:40,737 --> 00:01:44,287
+diagnoses a leak. The user's own history was scoring the
+
+34
+00:01:44,287 --> 00:01:48,800
+user. It derives the correction, reruns, and recovers.
+
+35
+00:01:49,188 --> 00:01:50,263
+No human touched that.
+
+36
+00:01:52,093 --> 00:01:55,275
+It keeps going, fanning out parallel sweeps across four
+
+37
+00:01:55,287 --> 00:01:58,574
+workers at a time. It tests a sequence model, a
+
+38
+00:01:58,586 --> 00:02:01,803
+metric-aware weighting scheme, and a statistics freshness
+
+39
+00:02:01,803 --> 00:02:05,657
+experiment. All three fail, and it records all three as
+
+40
+00:02:05,657 --> 00:02:07,336
+failures, because that is what they were.
+
+41
+00:02:08,137 --> 00:02:11,600
+Finally it declares convergence, under a rule it fixed
+
+42
+00:02:11,613 --> 00:02:14,463
+before the run started. It names its best validation
+
+43
+00:02:14,463 --> 00:02:18,012
+checkpoint, and scores the hidden test set exactly once.
+
+44
+00:02:20,088 --> 00:02:24,035
+The official baseline scores zero point five nine four six
+
+45
+00:02:24,243 --> 00:02:27,993
+on the hidden test. We reach zero point six zero one five.
+
+46
+00:02:28,344 --> 00:02:30,428
+On this benchmark the ceiling is not one.
+
+47
+00:02:30,779 --> 00:02:33,925
+A perfect ranking scores zero point eight six four five,
+
+48
+00:02:34,178 --> 00:02:36,590
+because a quarter of users have no positive label at all.
+
+49
+00:02:36,941 --> 00:02:39,868
+Against that real range, we move the baseline's share from
+
+50
+00:02:39,868 --> 00:02:42,138
+thirty-one percent to thirty-two point four.
+
+51
+00:02:42,500 --> 00:02:44,079
+All on eight CPU cores.
+
+52
+00:02:45,095 --> 00:02:47,881
+Nothing here is specific to one dataset.
+
+53
+00:02:48,286 --> 00:02:51,476
+The loop, the leak detection, and the honest logging of
+
+54
+00:02:51,476 --> 00:02:54,143
+what failed are a template for any ranking problem.
+
+55
+00:02:54,524 --> 00:02:56,798
+This is what it looks like when iteration is automated,
+
+56
+00:02:57,202 --> 00:02:59,095
+and the engineer gets to think instead.
+

@@ -1,0 +1,138 @@
+{
+  "name": "p3_rank_s1",
+  "features": "base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf,fm",
+  "objective": "lambdarank",
+  "past": true,
+  "params": {
+    "objective": "lambdarank",
+    "learning_rate": 0.02,
+    "num_leaves": 63,
+    "min_data_in_leaf": 200,
+    "feature_fraction": 0.5,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l2": 1.0,
+    "seed": 1,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None",
+    "label_gain": [
+      0,
+      1
+    ],
+    "lambdarank_truncation_level": 10
+  },
+  "best_iter": 203,
+  "n_features": 89,
+  "valid": {
+    "GAUC": 0.669317,
+    "nDCG@5": 0.536333,
+    "primary": 0.602825,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "onehot_feat3",
+      179409.0
+    ],
+    [
+      "tab",
+      162395.3
+    ],
+    [
+      "s_longtime_rate",
+      125138.6
+    ],
+    [
+      "onehot_feat8",
+      114060.9
+    ],
+    [
+      "u_lv_rate",
+      60116.4
+    ],
+    [
+      "fm_score",
+      53940.4
+    ],
+    [
+      "s_valid_rate",
+      32672.2
+    ],
+    [
+      "utab_lv_rate",
+      31585.6
+    ],
+    [
+      "ua_lv_rate",
+      26793.8
+    ],
+    [
+      "s_shorttime_rate",
+      13815.4
+    ],
+    [
+      "duration_ms",
+      12772.4
+    ],
+    [
+      "v_lv_rate",
+      10506.2
+    ],
+    [
+      "tag1",
+      10322.6
+    ],
+    [
+      "u_play_ratio",
+      9595.5
+    ],
+    [
+      "utags_lv_rate",
+      8544.9
+    ],
+    [
+      "u_imp",
+      8334.0
+    ],
+    [
+      "utab_cnt",
+      8312.6
+    ],
+    [
+      "ud_lv_rate",
+      7269.4
+    ],
+    [
+      "ut_lv_rate",
+      6630.0
+    ],
+    [
+      "s_follow_rate",
+      6576.0
+    ],
+    [
+      "s_complete_rate",
+      5982.2
+    ],
+    [
+      "onehot_feat7",
+      5184.5
+    ],
+    [
+      "a_lv_rate",
+      5122.2
+    ],
+    [
+      "upload_age",
+      4849.7
+    ],
+    [
+      "video_duration",
+      4579.9
+    ]
+  ],
+  "wall_seconds": 102.8
+}

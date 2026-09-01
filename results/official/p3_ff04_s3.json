@@ -1,0 +1,133 @@
+{
+  "name": "p3_ff04_s3",
+  "features": "base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf,fm",
+  "objective": "binary",
+  "past": true,
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.02,
+    "num_leaves": 63,
+    "min_data_in_leaf": 200,
+    "feature_fraction": 0.4,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l2": 1.0,
+    "seed": 3,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None"
+  },
+  "best_iter": 369,
+  "n_features": 89,
+  "valid": {
+    "GAUC": 0.673317,
+    "nDCG@5": 0.538383,
+    "primary": 0.60585,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "fm_score",
+      2384772.1
+    ],
+    [
+      "utab_lv_rate",
+      845277.3
+    ],
+    [
+      "tab",
+      845153.2
+    ],
+    [
+      "onehot_feat3",
+      546646.6
+    ],
+    [
+      "s_longtime_rate",
+      393212.3
+    ],
+    [
+      "onehot_feat8",
+      317577.5
+    ],
+    [
+      "u_click_rate",
+      140077.7
+    ],
+    [
+      "s_valid_rate",
+      118156.4
+    ],
+    [
+      "u_lv_rate",
+      110419.4
+    ],
+    [
+      "v_lv_rate",
+      109557.7
+    ],
+    [
+      "ua_lv_rate",
+      79718.8
+    ],
+    [
+      "s_shorttime_rate",
+      59958.8
+    ],
+    [
+      "a_lv_rate",
+      55578.6
+    ],
+    [
+      "utab_cnt",
+      47693.3
+    ],
+    [
+      "utags_lv_rate",
+      47185.9
+    ],
+    [
+      "v_play_ms",
+      34811.0
+    ],
+    [
+      "s_play_progress",
+      34017.8
+    ],
+    [
+      "tag1",
+      31162.2
+    ],
+    [
+      "ut_lv_rate",
+      27558.7
+    ],
+    [
+      "u_play_ratio",
+      23620.6
+    ],
+    [
+      "ud_lv_rate",
+      22454.1
+    ],
+    [
+      "hour",
+      15202.4
+    ],
+    [
+      "u_imp",
+      14940.7
+    ],
+    [
+      "onehot_feat7",
+      14692.9
+    ],
+    [
+      "s_play_user_num",
+      14599.9
+    ]
+  ],
+  "wall_seconds": 117.6
+}

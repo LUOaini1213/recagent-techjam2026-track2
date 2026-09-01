@@ -1,0 +1,177 @@
+1
+00:00:00,000 --> 00:00:04,200
+Every machine learning engineer knows this loop.
+
+2
+00:00:04,200 --> 00:00:08,000
+Look at the data. Build a feature. Train. Evaluate.
+
+3
+00:00:08,000 --> 00:00:11,000
+Realize you were wrong. Do it again.
+
+4
+00:00:11,000 --> 00:00:15,000
+It's the biggest time sink in recommender work — and it's just iteration.
+
+5
+00:00:15,000 --> 00:00:19,500
+So we built an agent that runs that loop by itself.
+
+6
+00:00:19,500 --> 00:00:24,000
+It reads the problem, reproduces the official baseline,
+
+7
+00:00:24,000 --> 00:00:29,500
+then proposes its own hypotheses, writes the code, trains,
+
+8
+00:00:29,500 --> 00:00:33,000
+and scores itself on the official metric.
+
+9
+00:00:33,000 --> 00:00:35,000
+Seventeen iterations. Zero lines of human code.
+
+10
+00:00:35,000 --> 00:00:39,000
+The agent drives four components.
+
+11
+00:00:39,000 --> 00:00:43,500
+A feature builder that computes every statistic strictly from the past.
+
+12
+00:00:43,500 --> 00:00:48,500
+A model layer — gradient boosting, a factorization machine, item-item models.
+
+13
+00:00:48,500 --> 00:00:51,500
+The official evaluator, which we never modify.
+
+14
+00:00:51,500 --> 00:00:55,000
+And a reflection step that picks the next hypothesis.
+
+15
+00:00:55,000 --> 00:01:00,000
+Here's a full run. The agent starts from raw KuaiRand-Pure logs
+
+16
+00:01:00,000 --> 00:01:03,500
+and builds its feature cache.
+
+17
+00:01:03,500 --> 00:01:09,000
+Every aggregate for a training row uses only strictly earlier days —
+
+18
+00:01:09,000 --> 00:01:13,000
+that discipline alone was our single biggest gain.
+
+19
+00:01:13,000 --> 00:01:18,000
+Now it trains and scores itself with the organizers' evaluator.
+
+20
+00:01:18,000 --> 00:01:24,000
+Watch the log: each iteration records a hypothesis, the reason,
+
+21
+00:01:24,000 --> 00:01:28,000
+the code change, and the validation score.
+
+22
+00:01:28,000 --> 00:01:32,000
+This is the moment that matters.
+
+23
+00:01:32,000 --> 00:01:38,000
+The agent adds collaborative-filtering features and the score collapses.
+
+24
+00:01:38,000 --> 00:01:44,000
+It inspects feature importance, sees one feature with four times the gain
+
+25
+00:01:44,000 --> 00:01:47,500
+of anything else, and diagnoses a leak —
+
+26
+00:01:47,500 --> 00:01:51,000
+the user's own history was scoring the user.
+
+27
+00:01:51,000 --> 00:01:55,000
+It derives the correction, reruns, and recovers. No human touched that.
+
+28
+00:01:55,000 --> 00:02:00,000
+It keeps going. It fans out parallel sweeps.
+
+29
+00:02:00,000 --> 00:02:06,000
+It tests a sequence model, a metric-aware weighting scheme,
+
+30
+00:02:06,000 --> 00:02:08,500
+and a freshness experiment —
+
+31
+00:02:08,500 --> 00:02:12,500
+and records all three as failures, because they were.
+
+32
+00:02:12,500 --> 00:02:17,000
+Finally it declares convergence under the rule it fixed in advance,
+
+33
+00:02:17,000 --> 00:02:20,000
+names its best checkpoint, and scores the hidden test set exactly once.
+
+34
+00:02:20,000 --> 00:02:25,000
+The official factorization-machine baseline scores 0.5946 on the hidden test.
+
+35
+00:02:25,000 --> 00:02:28,500
+We reach 0.6015. That's plus 0.0069 —
+
+36
+00:02:28,500 --> 00:02:32,000
+and on this benchmark the ceiling is not one point zero.
+
+37
+00:02:32,000 --> 00:02:38,000
+A perfect ranking scores 0.8645, because a quarter of users
+have no positive label at all.
+
+38
+00:02:38,000 --> 00:02:42,500
+Against that real range, we move the baseline's share
+from 31 percent to 32.4.
+
+39
+00:02:42,500 --> 00:02:45,000
+All of it on eight CPU cores, in four and a half hours.
+
+40
+00:02:45,000 --> 00:02:49,000
+Nothing here is specific to one dataset.
+
+41
+00:02:49,000 --> 00:02:54,000
+The loop, the leak detection, the past-only discipline,
+
+42
+00:02:54,000 --> 00:02:56,500
+and the honest logging of what failed —
+
+43
+00:02:56,500 --> 00:02:59,000
+that's a template for any ranking problem.
+
+44
+00:02:59,000 --> 00:03:00,000
+Thank you.

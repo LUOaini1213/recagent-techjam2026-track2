@@ -1,0 +1,134 @@
+{
+  "name": "p8_top60",
+  "features": "base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf,fm,sess,ease",
+  "objective": "binary",
+  "past": true,
+  "mixw": 1.0,
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.02,
+    "num_leaves": 63,
+    "min_data_in_leaf": 200,
+    "feature_fraction": 0.6,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l2": 1.0,
+    "seed": 0,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None"
+  },
+  "best_iter": 291,
+  "n_features": 60,
+  "valid": {
+    "GAUC": 0.673257,
+    "nDCG@5": 0.538284,
+    "primary": 0.60577,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "fm_score",
+      3583255.6
+    ],
+    [
+      "tab",
+      706432.2
+    ],
+    [
+      "onehot_feat3",
+      588790.3
+    ],
+    [
+      "utab_lv_rate",
+      338043.4
+    ],
+    [
+      "onehot_feat8",
+      331985.3
+    ],
+    [
+      "s_longtime_rate",
+      323778.4
+    ],
+    [
+      "u_lv_rate",
+      197725.3
+    ],
+    [
+      "u_click_rate",
+      120801.3
+    ],
+    [
+      "s_valid_rate",
+      66248.9
+    ],
+    [
+      "gap_prev_ms",
+      58390.1
+    ],
+    [
+      "sess_pos",
+      38766.3
+    ],
+    [
+      "utab_cnt",
+      32035.0
+    ],
+    [
+      "v_lv_rate",
+      29030.6
+    ],
+    [
+      "impr_idx_day",
+      22828.6
+    ],
+    [
+      "s_shorttime_rate",
+      20806.7
+    ],
+    [
+      "ua_lv_rate",
+      17806.6
+    ],
+    [
+      "tag1",
+      15446.2
+    ],
+    [
+      "u_play_ratio",
+      13912.4
+    ],
+    [
+      "u_imp",
+      11242.6
+    ],
+    [
+      "hour",
+      7316.5
+    ],
+    [
+      "ut_lv_rate",
+      6345.6
+    ],
+    [
+      "onehot_feat1",
+      6219.5
+    ],
+    [
+      "upload_age",
+      6110.7
+    ],
+    [
+      "s_follow_rate",
+      5312.5
+    ],
+    [
+      "onehot_feat7",
+      5191.7
+    ]
+  ],
+  "wall_seconds": 73.7
+}

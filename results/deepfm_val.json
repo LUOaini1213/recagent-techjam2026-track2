@@ -1,0 +1,15 @@
+{
+  "ndcg@10": 0.1472140655243749,
+  "recall@50": 0.9726384726384728,
+  "score": 0.5599262690814238,
+  "n_users": 40,
+  "n_scored_users": 39,
+  "wall_seconds": 2.586,
+  "device": {
+    "torch": "2.7.1+cpu",
+    "cuda_available": false,
+    "device_name": "cpu",
+    "gpu_count": 0
+  },
+  "model": "deepfm"
+}

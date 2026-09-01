@@ -1,0 +1,51 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+data/raw/
+data/processed/
+data/*.tar.gz
+*.csv
+*.parquet
+!tests/fixtures/**
+
+logs/*.jsonl
+logs/*.log
+# required Track 2 deliverable — must ship despite the rule above
+!logs/official_runs.jsonl
+
+results/*.pt
+results/*.pkl
+results/checkpoints/
+wandb/
+
+# trained boosters: 20-25 MB each, reproducible from the scripts
+results/*.txt
+results/official/*.txt
+results/official/preds/
+results/official/fm_feats/
+results/official/fm_feats_*/
+results/official/seq_feats/
+
+# intermediate feature caches (rebuilt by official_lgbm.py --build)
+data/interim/
+
+# rendered video frames (rebuilt by video_scenes.py)
+docs/video/frames/
+docs/video/seg_*.mp3
+
+# stale hand-off archive
+*.zip
+
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# artifacts of the abandoned CatBoost run
+catboost_info/

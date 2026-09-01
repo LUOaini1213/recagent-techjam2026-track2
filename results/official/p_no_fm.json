@@ -1,0 +1,133 @@
+{
+  "name": "p_no_fm",
+  "features": "base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf",
+  "objective": "binary",
+  "past": true,
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.02,
+    "num_leaves": 63,
+    "min_data_in_leaf": 200,
+    "feature_fraction": 0.7,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l2": 1.0,
+    "seed": 0,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None"
+  },
+  "best_iter": 401,
+  "n_features": 88,
+  "valid": {
+    "GAUC": 0.672368,
+    "nDCG@5": 0.536578,
+    "primary": 0.604473,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "tab",
+      1949278.5
+    ],
+    [
+      "utab_lv_rate",
+      1098877.5
+    ],
+    [
+      "onehot_feat3",
+      1014832.9
+    ],
+    [
+      "s_longtime_rate",
+      911099.7
+    ],
+    [
+      "onehot_feat8",
+      568534.3
+    ],
+    [
+      "u_click_rate",
+      246232.8
+    ],
+    [
+      "s_valid_rate",
+      217265.8
+    ],
+    [
+      "u_lv_rate",
+      208997.2
+    ],
+    [
+      "v_lv_rate",
+      82216.8
+    ],
+    [
+      "utab_cnt",
+      75592.4
+    ],
+    [
+      "tag1",
+      37696.4
+    ],
+    [
+      "u_play_ratio",
+      30182.9
+    ],
+    [
+      "s_shorttime_rate",
+      22233.8
+    ],
+    [
+      "ua_lv_rate",
+      20527.4
+    ],
+    [
+      "hour",
+      15139.5
+    ],
+    [
+      "a_lv_rate",
+      14932.8
+    ],
+    [
+      "u_imp",
+      11448.2
+    ],
+    [
+      "dur_bucket",
+      11437.2
+    ],
+    [
+      "s_follow_rate",
+      10725.4
+    ],
+    [
+      "onehot_feat7",
+      9705.6
+    ],
+    [
+      "onehot_feat1",
+      9413.3
+    ],
+    [
+      "video_duration",
+      8538.2
+    ],
+    [
+      "s_play_progress",
+      8106.8
+    ],
+    [
+      "s_complete_rate",
+      6830.5
+    ],
+    [
+      "duration_ms",
+      6602.2
+    ]
+  ],
+  "wall_seconds": 114.8
+}

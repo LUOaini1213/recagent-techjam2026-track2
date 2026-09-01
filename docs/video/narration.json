@@ -1,0 +1,77 @@
+{
+  "_comment": "Edit this file to change the video. Then rerun the four commands in docs/video/README.md — nothing else needs touching.",
+  "voice": "en-US-AndrewMultilingualNeural",
+  "total_seconds": 180,
+  "segments": [
+    {
+      "name": "problem",
+      "start": 0.0,
+      "end": 15.0,
+      "scene": "loop",
+      "text": "Every machine learning engineer knows this loop. Look at the data. Build a feature. Train. Evaluate. Realize you were wrong, and do it again. It is the biggest time sink in recommender work, and almost none of it is creative."
+    },
+    {
+      "name": "solution",
+      "start": 15.0,
+      "end": 35.0,
+      "scene": "claims",
+      "text": "So we built an agent that runs the loop by itself. It reads the problem, reproduces the official baseline, then proposes its own hypotheses, writes the code, trains, and scores itself on the official metric. Twenty-three iterations. Zero lines of code written by a human."
+    },
+    {
+      "name": "architecture",
+      "start": 35.0,
+      "end": 55.0,
+      "scene": "architecture",
+      "text": "The agent drives four components. A feature builder that computes every statistic strictly from the past. A model layer: gradient boosting, a factorization machine, and item-item models. The official evaluator, which we never modify. And a reflection step that reads the scores and picks what to try next."
+    },
+    {
+      "name": "demo_build",
+      "start": 55.0,
+      "end": 73.0,
+      "scene": "terminal_build",
+      "text": "Here is a full run. The agent starts from the raw KuaiRand logs and builds its own feature cache. One point one million training rows, matching the official split exactly. Every statistic uses only strictly earlier days. That one discipline was our biggest single gain."
+    },
+    {
+      "name": "demo_train",
+      "start": 73.0,
+      "end": 88.0,
+      "scene": "terminal_train",
+      "text": "Now it trains, and scores itself with the organizers' evaluator, which we never modify. Watch the log. Every iteration records a hypothesis, the reason behind it, the code change it applied, and the validation score that came back."
+    },
+    {
+      "name": "demo_leak",
+      "start": 88.0,
+      "end": 112.0,
+      "scene": "leak",
+      "text": "This is the moment that matters. The agent adds collaborative filtering features, and the score collapses. It inspects feature importance, sees one feature with four times the gain of anything else, and diagnoses a leak. The user's own history was scoring the user. It derives the correction, reruns, and recovers. No human touched that."
+    },
+    {
+      "name": "demo_sweep",
+      "start": 112.0,
+      "end": 128.0,
+      "scene": "sweep",
+      "text": "It keeps going, fanning out parallel sweeps across four workers at a time. It tests a sequence model, a metric-aware weighting scheme, and a statistics freshness experiment. All three fail, and it records all three as failures, because that is what they were."
+    },
+    {
+      "name": "demo_stop",
+      "start": 128.0,
+      "end": 140.0,
+      "scene": "stop",
+      "text": "Finally it declares convergence, under a rule it fixed before the run started. It names its best validation checkpoint, and scores the hidden test set exactly once."
+    },
+    {
+      "name": "results",
+      "start": 140.0,
+      "end": 165.0,
+      "scene": "results",
+      "text": "The official baseline scores zero point five nine four six on the hidden test. We reach zero point six zero one five. On this benchmark the ceiling is not one. A perfect ranking scores zero point eight six four five, because a quarter of users have no positive label at all. Against that real range, we move the baseline's share from thirty-one percent to thirty-two point four. All on eight CPU cores."
+    },
+    {
+      "name": "impact",
+      "start": 165.0,
+      "end": 180.0,
+      "scene": "end",
+      "text": "Nothing here is specific to one dataset. The loop, the leak detection, and the honest logging of what failed are a template for any ranking problem. This is what it looks like when iteration is automated, and the engineer gets to think instead."
+    }
+  ]
+}

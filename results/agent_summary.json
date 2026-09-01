@@ -1,0 +1,47 @@
+{
+  "best": {
+    "iter": 0,
+    "id": "popularity",
+    "hypothesis": "Bayesian-smoothed item CTR is a cheap ranking prior.",
+    "why": "Sanity-check the official metric pipeline before any learned model.",
+    "model": "popularity",
+    "metrics": {
+      "ndcg@10": 0.18174708081441698,
+      "recall@50": 0.9702686202686203,
+      "score": 0.5760078505415186,
+      "n_scored_users": 39,
+      "wall_seconds": 0.091
+    },
+    "delta_vs_baseline": {
+      "ndcg@10": 0.18174708081441698,
+      "recall@50": 0.9702686202686203,
+      "score": 0.5760078505415186
+    },
+    "error": null,
+    "recovery": null,
+    "human_interventions": 0,
+    "tokens": {
+      "in": 0,
+      "out": 0
+    },
+    "gpu_hours": 2.5e-05,
+    "device": {
+      "torch": "2.7.1+cpu",
+      "cuda_available": false,
+      "device_name": "cpu",
+      "gpu_count": 0
+    }
+  },
+  "baseline": {
+    "ndcg@10": 0.1472140655243749,
+    "recall@50": 0.9726384726384728,
+    "score": 0.5599262690814238
+  },
+  "n_iters": 2,
+  "wall_seconds": 4.784,
+  "human_interventions": 0,
+  "history_ids": [
+    "popularity",
+    "deepfm_click"
+  ]
+}

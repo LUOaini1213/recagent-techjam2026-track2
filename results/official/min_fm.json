@@ -1,0 +1,81 @@
+{
+  "name": "min_fm",
+  "features": "base,item,fm",
+  "objective": "binary",
+  "past": false,
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.05,
+    "num_leaves": 127,
+    "min_data_in_leaf": 50,
+    "feature_fraction": 0.9,
+    "bagging_fraction": 0.9,
+    "bagging_freq": 1,
+    "lambda_l2": 1.0,
+    "seed": 0,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None"
+  },
+  "best_iter": 17,
+  "n_features": 12,
+  "valid": {
+    "GAUC": 0.662947,
+    "nDCG@5": 0.533832,
+    "primary": 0.59839,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "fm_score",
+      1737503.2
+    ],
+    [
+      "v_lv_rate",
+      147450.4
+    ],
+    [
+      "tab",
+      94626.9
+    ],
+    [
+      "v_imp",
+      81169.2
+    ],
+    [
+      "v_click_rate",
+      46357.6
+    ],
+    [
+      "v_play_ratio",
+      25169.0
+    ],
+    [
+      "v_play_ms",
+      24599.7
+    ],
+    [
+      "v_hate_rate",
+      16601.5
+    ],
+    [
+      "duration_ms",
+      11908.6
+    ],
+    [
+      "log_dur",
+      551.0
+    ],
+    [
+      "hour",
+      215.3
+    ],
+    [
+      "dow",
+      0.0
+    ]
+  ],
+  "wall_seconds": 40.1
+}

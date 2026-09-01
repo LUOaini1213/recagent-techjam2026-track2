@@ -1,0 +1,133 @@
+{
+  "name": "p5_aux",
+  "features": "base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf,fm,sess,ease,aux",
+  "objective": "binary",
+  "past": true,
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.02,
+    "num_leaves": 63,
+    "min_data_in_leaf": 200,
+    "feature_fraction": 0.4,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l2": 1.0,
+    "seed": 0,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None"
+  },
+  "best_iter": 384,
+  "n_features": 108,
+  "valid": {
+    "GAUC": 0.67521,
+    "nDCG@5": 0.539348,
+    "primary": 0.607279,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "fm_score",
+      2147201.6
+    ],
+    [
+      "tab",
+      978604.3
+    ],
+    [
+      "utab_lv_rate",
+      606402.9
+    ],
+    [
+      "s_longtime_rate",
+      535004.1
+    ],
+    [
+      "onehot_feat3",
+      499806.1
+    ],
+    [
+      "onehot_feat8",
+      330790.0
+    ],
+    [
+      "u_lv_rate",
+      258142.6
+    ],
+    [
+      "u_click_rate",
+      214992.8
+    ],
+    [
+      "s_valid_rate",
+      185915.9
+    ],
+    [
+      "v_lv_rate",
+      80044.8
+    ],
+    [
+      "gap_prev_ms",
+      78377.8
+    ],
+    [
+      "utags_lv_rate",
+      67369.6
+    ],
+    [
+      "a_lv_rate",
+      63119.6
+    ],
+    [
+      "utab_cnt",
+      50221.5
+    ],
+    [
+      "s_shorttime_rate",
+      49478.4
+    ],
+    [
+      "ua_lv_rate",
+      47113.2
+    ],
+    [
+      "sess_pos",
+      46382.9
+    ],
+    [
+      "v_click_rate",
+      38197.4
+    ],
+    [
+      "tag1",
+      31128.8
+    ],
+    [
+      "impr_idx_day",
+      28922.9
+    ],
+    [
+      "u_play_ratio",
+      28042.7
+    ],
+    [
+      "u_margin",
+      24641.5
+    ],
+    [
+      "onehot_feat7",
+      18467.3
+    ],
+    [
+      "u_imp",
+      14436.8
+    ],
+    [
+      "s_play_progress",
+      11211.0
+    ]
+  ],
+  "wall_seconds": 218.4
+}

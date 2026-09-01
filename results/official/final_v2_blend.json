@@ -1,0 +1,19 @@
+{
+  "models": [
+    "gbdt5v2",
+    "gbdt5",
+    "rank3",
+    "fm3"
+  ],
+  "weights": {
+    "gbdt5v2": 0.8,
+    "rank3": 0.2
+  },
+  "valid": {
+    "GAUC": 0.676221,
+    "nDCG@5": 0.539954,
+    "primary": 0.608088,
+    "users": 22377,
+    "rows": 124909
+  }
+}

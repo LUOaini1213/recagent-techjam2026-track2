@@ -1,0 +1,134 @@
+{
+  "name": "p6_mixw03",
+  "features": "base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf,fm,sess,ease",
+  "objective": "binary",
+  "past": true,
+  "mixw": 0.3,
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.02,
+    "num_leaves": 63,
+    "min_data_in_leaf": 200,
+    "feature_fraction": 0.4,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l2": 1.0,
+    "seed": 0,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None"
+  },
+  "best_iter": 401,
+  "n_features": 99,
+  "valid": {
+    "GAUC": 0.675737,
+    "nDCG@5": 0.539288,
+    "primary": 0.607512,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "fm_score",
+      1880203.8
+    ],
+    [
+      "tab",
+      888741.3
+    ],
+    [
+      "onehot_feat3",
+      501465.5
+    ],
+    [
+      "utab_lv_rate",
+      388158.4
+    ],
+    [
+      "s_longtime_rate",
+      369718.4
+    ],
+    [
+      "onehot_feat8",
+      296858.7
+    ],
+    [
+      "u_lv_rate",
+      112343.8
+    ],
+    [
+      "s_valid_rate",
+      101223.9
+    ],
+    [
+      "ua_lv_rate",
+      83275.3
+    ],
+    [
+      "u_click_rate",
+      81697.6
+    ],
+    [
+      "gap_prev_ms",
+      74117.9
+    ],
+    [
+      "a_lv_rate",
+      71716.6
+    ],
+    [
+      "impr_idx_day",
+      65005.9
+    ],
+    [
+      "v_lv_rate",
+      60917.3
+    ],
+    [
+      "sess_pos",
+      56204.0
+    ],
+    [
+      "s_shorttime_rate",
+      43995.7
+    ],
+    [
+      "tag1",
+      36578.3
+    ],
+    [
+      "utab_cnt",
+      31774.3
+    ],
+    [
+      "utags_lv_rate",
+      21687.3
+    ],
+    [
+      "onehot_feat7",
+      17880.1
+    ],
+    [
+      "s_play_progress",
+      16943.0
+    ],
+    [
+      "u_play_ratio",
+      14230.8
+    ],
+    [
+      "v_click_rate",
+      10832.9
+    ],
+    [
+      "video_duration",
+      10454.8
+    ],
+    [
+      "ut_lv_rate",
+      10405.0
+    ]
+  ],
+  "wall_seconds": 221.1
+}

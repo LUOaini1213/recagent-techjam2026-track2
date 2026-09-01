@@ -1,0 +1,107 @@
+{
+  "voice": "en-US-AndrewMultilingualNeural",
+  "total_s": 179.44,
+  "segments": [
+    {
+      "segment": "problem",
+      "scene": "loop",
+      "start": 0.0,
+      "slot_s": 15.0,
+      "audio_s": 14.83,
+      "rate": "+0%",
+      "wpm": 162,
+      "words": 40
+    },
+    {
+      "segment": "solution",
+      "scene": "claims",
+      "start": 15.0,
+      "slot_s": 20.0,
+      "audio_s": 18.79,
+      "rate": "+0%",
+      "wpm": 144,
+      "words": 45
+    },
+    {
+      "segment": "architecture",
+      "scene": "architecture",
+      "start": 35.0,
+      "slot_s": 20.0,
+      "audio_s": 19.72,
+      "rate": "+7%",
+      "wpm": 146,
+      "words": 48
+    },
+    {
+      "segment": "demo_build",
+      "scene": "terminal_build",
+      "start": 55.0,
+      "slot_s": 18.0,
+      "audio_s": 17.52,
+      "rate": "+6%",
+      "wpm": 154,
+      "words": 45
+    },
+    {
+      "segment": "demo_train",
+      "scene": "terminal_train",
+      "start": 73.0,
+      "slot_s": 15.0,
+      "audio_s": 14.44,
+      "rate": "+3%",
+      "wpm": 158,
+      "words": 38
+    },
+    {
+      "segment": "demo_leak",
+      "scene": "leak",
+      "start": 88.0,
+      "slot_s": 24.0,
+      "audio_s": 22.63,
+      "rate": "+0%",
+      "wpm": 143,
+      "words": 54
+    },
+    {
+      "segment": "demo_sweep",
+      "scene": "sweep",
+      "start": 112.0,
+      "slot_s": 16.0,
+      "audio_s": 15.69,
+      "rate": "+8%",
+      "wpm": 164,
+      "words": 43
+    },
+    {
+      "segment": "demo_stop",
+      "scene": "stop",
+      "start": 128.0,
+      "slot_s": 12.0,
+      "audio_s": 10.36,
+      "rate": "+0%",
+      "wpm": 156,
+      "words": 27
+    },
+    {
+      "segment": "results",
+      "scene": "results",
+      "start": 140.0,
+      "slot_s": 25.0,
+      "audio_s": 24.4,
+      "rate": "+14%",
+      "wpm": 177,
+      "words": 72
+    },
+    {
+      "segment": "impact",
+      "scene": "end",
+      "start": 165.0,
+      "slot_s": 15.0,
+      "audio_s": 14.44,
+      "rate": "+5%",
+      "wpm": 179,
+      "words": 43
+    }
+  ],
+  "subtitle_lines": 56
+}

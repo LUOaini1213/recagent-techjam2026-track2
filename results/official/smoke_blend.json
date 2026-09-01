@@ -1,0 +1,17 @@
+{
+  "models": [
+    "past_reg_mid",
+    "fm"
+  ],
+  "weights": {
+    "past_reg_mid": 0.6,
+    "fm": 0.4
+  },
+  "valid": {
+    "GAUC": 0.673779,
+    "nDCG@5": 0.538247,
+    "primary": 0.606013,
+    "users": 22377,
+    "rows": 124909
+  }
+}

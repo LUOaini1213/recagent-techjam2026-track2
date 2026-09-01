@@ -1,0 +1,133 @@
+{
+  "name": "p4_sess",
+  "features": "base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf,fm,sess",
+  "objective": "binary",
+  "past": true,
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.02,
+    "num_leaves": 63,
+    "min_data_in_leaf": 200,
+    "feature_fraction": 0.4,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l2": 1.0,
+    "seed": 0,
+    "max_cat_threshold": 64,
+    "cat_smooth": 10.0,
+    "cat_l2": 10.0,
+    "metric": "None"
+  },
+  "best_iter": 285,
+  "n_features": 97,
+  "valid": {
+    "GAUC": 0.674037,
+    "nDCG@5": 0.538985,
+    "primary": 0.606511,
+    "users": 22377,
+    "rows": 124909
+  },
+  "top_features": [
+    [
+      "fm_score",
+      2376929.7
+    ],
+    [
+      "tab",
+      922118.9
+    ],
+    [
+      "utab_lv_rate",
+      537326.7
+    ],
+    [
+      "s_longtime_rate",
+      471423.7
+    ],
+    [
+      "onehot_feat3",
+      446904.3
+    ],
+    [
+      "onehot_feat8",
+      269382.2
+    ],
+    [
+      "ua_lv_rate",
+      216019.6
+    ],
+    [
+      "u_lv_rate",
+      204324.8
+    ],
+    [
+      "s_valid_rate",
+      182361.8
+    ],
+    [
+      "u_click_rate",
+      144250.1
+    ],
+    [
+      "v_lv_rate",
+      119526.2
+    ],
+    [
+      "gap_prev_ms",
+      69558.6
+    ],
+    [
+      "sess_pos",
+      47001.8
+    ],
+    [
+      "a_lv_rate",
+      38570.1
+    ],
+    [
+      "utab_cnt",
+      36175.4
+    ],
+    [
+      "ut_lv_rate",
+      34112.7
+    ],
+    [
+      "s_shorttime_rate",
+      27768.7
+    ],
+    [
+      "impr_idx_day",
+      26912.2
+    ],
+    [
+      "u_play_ratio",
+      22464.2
+    ],
+    [
+      "u_imp",
+      19980.9
+    ],
+    [
+      "tag1",
+      19046.9
+    ],
+    [
+      "ud_lv_rate",
+      17019.3
+    ],
+    [
+      "v_click_rate",
+      14984.1
+    ],
+    [
+      "onehot_feat7",
+      9461.2
+    ],
+    [
+      "utags_lv_rate",
+      9084.7
+    ]
+  ],
+  "wall_seconds": 113.3
+}
