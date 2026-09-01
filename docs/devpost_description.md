@@ -1,5 +1,8 @@
 # RecAgent — Autonomous ML Research Agent for KuaiRand-Pure (Track 2)
 
+**Demo video:** https://youtu.be/OoPYcCveBfw (3:00, narrated, subtitled)
+**Repository:** https://github.com/LUOaini1213/recagent-techjam2026-track2
+
 ## What it does
 
 RecAgent is an autonomous ML research agent that runs the full MLE loop on the
