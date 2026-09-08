@@ -1,5 +1,10 @@
 # RecAgent — Autonomous ML Research Agent
 
+> **TikTok TechJam 2026 result: this entry did not place.** The competition has
+> concluded and this submission was not among those selected. Everything below is
+> what was built and measured — each number traces to a committed artifact, and
+> none of it was ever a placement claim.
+
 **TikTok TechJam 2026 · Track 2 · KuaiRand-Pure (`long_view` ranking, official starter-kit protocol)**
 
 [![ci](https://github.com/LUOaini1213/recagent-techjam2026-track2/actions/workflows/ci.yml/badge.svg)](https://github.com/LUOaini1213/recagent-techjam2026-track2/actions/workflows/ci.yml)
