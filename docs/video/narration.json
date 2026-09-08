@@ -57,7 +57,7 @@
       "start": 128.0,
       "end": 140.0,
       "scene": "stop",
-      "text": "Finally it declares convergence, under a rule it fixed before the run started. It names its best validation checkpoint, and scores the hidden test set exactly once."
+      "text": "Finally it declares convergence under its stopping rule, names its best validation checkpoint, and scores the hidden test set exactly once."
     },
     {
       "name": "results",
@@ -73,5 +73,6 @@
       "scene": "end",
       "text": "Nothing here is specific to one dataset. The loop, the leak detection, and the honest logging of what failed are a template for any ranking problem. This is what it looks like when iteration is automated, and the engineer gets to think instead."
     }
-  ]
+  ],
+  "_erratum": "The published video (youtu.be/OoPYcCveBfw, rendered 2026-09-01) says at 2:12 'under a rule it fixed in advance'. That is wrong: logs/official_runs.jsonl declares the convergence rule was formalized mid-run and applied to the tail. The narration text here is corrected; the published cut is left as submitted and the error is disclosed in docs/ERRATA.md rather than silently re-rendered."
 }

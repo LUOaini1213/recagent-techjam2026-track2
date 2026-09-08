@@ -30,9 +30,11 @@ HEADER = {
     'hardware': '8-core CPU, 16 GB RAM, no GPU used',
     'agent': 'Claude (Fable 5) driving the pipeline in Claude Code; '
              'training code deterministic Python (LightGBM/PyTorch-CPU)',
-    'human_interventions': 3,
-    'human_interventions_note': 'Three goal-level user directives ("status?", '
-        '"optimize to the best", "check the standard online / deep-research"). '
+    'human_interventions': 5,
+    'human_interventions_note': 'Five goal-level user directives over the '
+        'whole run ("status?", "optimize to the best", "check the official '
+        'standard online / deep-research", "do it" authorizing the freshness '
+        'measurement, and the demo-script request); the footer lists them. '
         'Zero manual code or hyperparameter interventions; all hypotheses, '
         'code, and configs were agent-generated.',
     'test_label_hygiene': 'All model selection and early stopping on the '
@@ -169,10 +171,15 @@ def main():
             })
             best = max((s for s in subs if s.get('valid')),
                        key=lambda s: s['valid']['primary'], default=None)
+        secs = [s['wall_seconds'] for s in subs
+                if isinstance(s.get('wall_seconds'), (int, float))]
         lines.append({
             'type': 'iteration', 'iter': it, 'hypothesis': hyp, 'why': why,
             'change': change,
             'metrics': best['valid'] if best else None,
+            # Training wall-clock of the iteration, summed over its sub-runs
+            # (the per-run figure each results/official/*.json records).
+            'wall_seconds_total': round(sum(secs), 1) if secs else None,
             'sub_runs': subs, 'human_interventions': 0,
         })
     # blend iterations + designation appended by finalize step

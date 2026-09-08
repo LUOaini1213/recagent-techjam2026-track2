@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from src.data.side import LEAK_COLS, add_side_features, side_feature_names
 from src.eval.metrics import ranking_metrics
@@ -10,7 +11,7 @@ def test_side_join_ignores_val_click_and_avoids_leak_names(tmp_path: Path):
     raw = Path("data/raw/KuaiRand-Pure/data")
     vocab = Path("data/processed/vocab.json")
     if not raw.exists() or not vocab.exists():
-        return
+        pytest.skip("needs the raw KuaiRand-Pure data and the v0 vocab")
     val = pd.read_parquet("data/processed/val.parquet").head(40).copy()
     flipped = val.copy()
     flipped["is_click"] = 1 - flipped["is_click"]

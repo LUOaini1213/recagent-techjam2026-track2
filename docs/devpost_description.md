@@ -20,15 +20,17 @@ checkpoint per FAQ 2.9.1c, scored once on test).
 
 For scale: on this benchmark a perfect ranking scores only 0.8645 (27% of
 users have no positive label) and random scores 0.4753, so the FM baseline
-already captures 31% of the attainable range and this submission reaches
+already captures 30.7% of the attainable range and this submission reaches
 32.4%.
 
 ## How it addresses the problem statement
 
 - **Reproduce the baseline**: torch FM reimplementation matches the published
-  numbers (valid 0.6015 vs 0.6016; test within the published seed std).
-- **Iterate autonomously**: the agent proposed and tested ~45 hypotheses in
-  three workflow-orchestrated sweeps plus targeted iterations. Highlights it
+  numbers (valid 0.6019 vs 0.6016; test within the published seed std).
+- **Iterate autonomously**: the agent proposed and tested ~45 hypotheses
+  (grouped into 23 scored iterations — seed replicates and sweep members count
+  as one iteration each) in three workflow-orchestrated sweeps plus targeted
+  iterations. Highlights it
   found on its own:
   - *Past-only train features*: aligning train rows to the valid/test
     condition (stats from strictly earlier days via per-key×date prefix sums)
@@ -73,7 +75,7 @@ ends in a hard assertion that deletes the file if it misses 3:00. Editing
   recovery, interventions, wall-clock): `logs/official_runs.jsonl`.
 - Reproduction: `results/official/leaderboard.md` (commands for every stage);
   official metric computed only by the untouched starter-kit `evaluate.py`.
-- Human interventions: 3 goal-level directives, 0 manual code/parameter edits.
+- Human interventions: 5 goal-level directives (all quoted in the run-log footer), 0 manual code/parameter edits.
 
 ## What we tried that failed (and how we know)
 

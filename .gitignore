@@ -27,7 +27,15 @@ wandb/
 # trained boosters: 20-25 MB each, reproducible from the scripts
 results/*.txt
 results/official/*.txt
-results/official/preds/
+# per-run predictions are rebuilt by the scripts, except the three files per
+# split that scripts/official_final.py needs to re-derive the submission
+results/official/preds/*
+!results/official/preds/gbdt5v2_valid.npy
+!results/official/preds/gbdt5v2_test.npy
+!results/official/preds/rank3_valid.npy
+!results/official/preds/rank3_test.npy
+!results/official/preds/FINAL_valid.npy
+!results/official/preds/FINAL_test.npy
 results/official/fm_feats/
 results/official/fm_feats_*/
 results/official/seq_feats/
@@ -49,3 +57,6 @@ Thumbs.db
 
 # artifacts of the abandoned CatBoost run
 catboost_info/
+
+# Grand Final rehearsal material — internal, never published
+docs/final_prep/

@@ -1,142 +1,215 @@
-# RecAgent — TikTok TechJam 2026 Track 2
+# RecAgent — Autonomous ML Research Agent
 
-Official scoring (starter kit, do not invent metrics): `kuairand-starter-kit/` — `long_view`, GAUC + nDCG@5. Run `python kuairand-starter-kit/baseline.py --data_dir data/raw/KuaiRand-Pure/data --model fm` from that folder.
+**TikTok TechJam 2026 · Track 2 · KuaiRand-Pure (`long_view` ranking, official starter-kit protocol)**
 
-**Official-protocol result (final, 2026-09-01):** blend of a 5-seed LightGBM
-backbone (past-only features + FM OOF score + item-item CF + EASE + session
-features) with lambdarank diversity members —
-**valid 0.6081 / test 0.6015** vs FM baseline 0.6016 / 0.5946 (**+0.0069
-test primary**). Run: 23 scored iterations (cap 50), CPU-only, ~3.5 h active
-wall-clock (cap 6 h), 0 manual code interventions. Pipeline: `scripts/official_lgbm.py`, `official_fm.py`,
-`official_blend.py`; per-iteration log `logs/official_runs.jsonl`; details
-and reproduction in `results/official/leaderboard.md`; final recipe in
+[![ci](https://github.com/LUOaini1213/recagent-techjam2026-track2/actions/workflows/ci.yml/badge.svg)](https://github.com/LUOaini1213/recagent-techjam2026-track2/actions/workflows/ci.yml)
+
+[▶ 3-minute demo video](https://youtu.be/OoPYcCveBfw) ·
+[Per-iteration run log](logs/RUN_LOG.md) (table; [the JSONL it is rendered from](logs/official_runs.jsonl)) ·
+[Leaderboard and reproduction](results/official/leaderboard.md) ·
+[Devpost description](docs/devpost_description.md)
+
+An agent that runs the MLE loop itself — inspect → feature → train → evaluate →
+reflect — on the official KuaiRand-Pure benchmark, and beats the organizers' FM
+baseline on the hidden test set without a human writing or editing a line of
+model code.
+
+## Result
+
+Scoring is the untouched starter kit: `kuairand-starter-kit/evaluate.py`, label
+`long_view`, within-user ranking, **primary = mean(GAUC, nDCG@5)**. Validation
+was used for every decision; the hidden test split was scored **once**, on the
+validation-best checkpoint at run stop (FAQ 2.9.1c).
+
+| Model | valid | test |
+|---|---:|---:|
+| random (published) | — | 0.4753 |
+| pop (published) | 0.5807 | 0.5715 |
+| FM starter kit (published) | 0.6016 | 0.5946 |
+| **RecAgent final blend** | **0.6081** | **0.6015** |
+
+**+0.0069 test primary over the FM baseline** (test GAUC 0.6697, nDCG@5 0.5333).
+For scale: a label-perfect ranking scores 0.8645 on this benchmark (27% of users
+have no positive label), so the baseline sits at 30.7% of the attainable range
+and this submission at 32.4% — computed by `scripts/official_ceiling.py`, artifact
+[`results/official/ceiling.json`](results/official/ceiling.json). Final recipe:
 `results/official/final.json`.
 
-**Handing this to another Grok bot?** Read `BOT.md` and run `python scripts/run_bot.py`.
+Is the delta more than noise? A paired user-level bootstrap (2,000 resamples of
+the 23,875 test users, both systems scored on the same draw) puts
+final − FM at **+0.0072** primary against our FM reproduction (0.5943), 95% CI
+**[+0.0058, +0.0086]**; 0 of 2,000 resamples were ≤ 0. Per-user pieces are
+checked against `evaluate.py` on the full sample before resampling —
+`scripts/official_bootstrap.py`, artifact
+[`results/official/bootstrap.json`](results/official/bootstrap.json).
 
-Autonomous ML research agent for **click ranking** on [KuaiRand-Pure](https://kuairand.com).
+Budget actually used, against the track's hard caps:
 
-Track 2 asks for an agent that runs the MLE loop (inspect → feature → train → eval → reflect) and beats an official-style baseline on **NDCG@10 / Recall@50** with `is_click` as the positive label.
+| | used | cap |
+|---|---:|---:|
+| scored iterations | **23** | 50 |
+| active wall-clock | **~3.5 h** | 6 h |
+| GPU | none (8-core CPU, 16 GB RAM) | — |
+| manual code / feature / hyperparameter edits | **0** | — |
 
-This repo does **not** rerun the original CWM watch-time task. It reuses the CWM-style DeepFM backbone and features, then scores **click** on the TechJam date split.
+## Verify the headline without retraining
 
-## Hardware note
-
-Developed for a **GTX 1650 4GB** + 16GB RAM. Current environment may have CPU-only PyTorch; GPU training needs a CUDA wheel:
-
-```powershell
-pip install torch --index-url https://download.pytorch.org/whl/cu124
-```
-
-Skip KuaiRand-1k / 27k on this machine.
-
-## Setup
-
-```powershell
-cd "E:\tictok 赛道2"
+```bash
 pip install -r requirements.txt
+python -m pytest tests                     # 30 tests on synthetic data, ~12 s: official metric vs the vectorized one, past-only stats, the blend recipe
+python scripts/official_final.py --check   # FINAL_*.npy == 0.80·rank01(gbdt5v2) + 0.20·rank01(rank3), bit for bit, from the committed group predictions
 ```
 
-## Data
+Both run in CI on every push. The committed artifacts are the two group
+predictions and the final blend per split (`results/official/preds/`, 7 MB) and
+`logs/official_runs.jsonl`; the trained boosters are not (20–25 MB each; the
+pipeline rebuilds them). To *rescore* the blend rather than only re-derive it,
+add the labels: `python scripts/download_kuairand.py` then
+`python scripts/official_lgbm.py --build --past`, and the same `--check` prints
+valid 0.6081 / test 0.6015 against `final.json`.
 
-**Preferred (real benchmark):**
+## What "autonomous" means here
 
-```powershell
-python scripts/download_kuairand.py
-python -m src.data.prepare
+The loop was driven by an LLM agent (Claude, run through Claude Code). It
+proposed each hypothesis, wrote the feature and training code, ran the official
+evaluator, read the numbers and decided what to try next. The training code it
+produced is deterministic Python (LightGBM, a PyTorch-CPU FM); the agent is the
+thing that changed it between iterations.
+
+Humans gave goal-level directives only — five in total, all quoted in the log
+footer ("status?", "optimize to the best", "check the official standard online",
+"do it", "write the demo script"). Zero manual edits to code, features or
+parameters. Every scored iteration is one line in `logs/official_runs.jsonl`
+with the hypothesis, why, the change applied, valid GAUC / nDCG@5 / primary,
+errors and recovery, and wall-clock; seed replicates of one hypothesis are
+grouped into that iteration (40+ individual training runs sit in
+`results/official/*.json`).
+
+Three iterations worth reading in the log:
+
+1. **Past-only train features** (the single biggest step, ≈ +0.005). Every
+   aggregate feature for a train row uses only strictly earlier days, so train
+   rows see the same conditions valid/test rows do. Leave-one-out alone left a
+   train/valid mismatch that made boosting peak at iteration ~30.
+2. **A leak the agent caught and fixed itself** (iteration 2). Adding item-item
+   CF and cross features *dropped* validation to 0.5738. The agent read the
+   feature gains, saw `cf_mean` at 4× the next feature, derived the exact
+   leave-user-out correction and recovered — logged as an error → recovery pair.
+3. **A rules-gray-area idea it measured instead of taking.** Extending the
+   statistics pool into the validation week would give test rows fresher
+   statistics. Measured at constant window length using train+valid only,
+   freshness was worth **−0.0003**; window *length* is what matters. Worth at
+   most +0.0005, not worth the FAQ 2.9.2 risk. Declined.
+
+After convergence the agent tested eight more hypotheses (sequence model,
+metric-aware weighting, per-user rank blending, multi-λ EASE, feature
+selection, CatBoost diversity, statistics freshness). All eight were negative
+or neutral and all are in the log — the plateau is measured, not assumed.
+
+## Method (the final recipe)
+
+5-seed LightGBM backbone on past-only features — FM out-of-fold score,
+item-item cosine CF with a full leave-user-out correction, EASE item-item
+scores, user × duration-bucket / tab / tag crosses, session features — blended
+by rank average with three lambdarank diversity members
+(`0.80 · gbdt5v2 + 0.20 · rank3`). What each part was worth, in order of
+impact, is in [`results/official/leaderboard.md`](results/official/leaderboard.md).
+
+Rules audit: `log_random_4_22_to_5_08_pure.csv` is co-extensive with the
+valid+test window and is used nowhere; KuaiRand-1k / 27k are not used; test
+labels never touched model selection, early stopping or feature statistics.
+
+## Reproduce
+
+Python 3.11, CPU is enough. The official evaluator is vendored, unmodified, in
+`kuairand-starter-kit/`.
+
+```bash
+git clone https://github.com/LUOaini1213/recagent-techjam2026-track2
+cd recagent-techjam2026-track2
+pip install -r requirements.txt
+python scripts/download_kuairand.py          # KuaiRand-Pure from Zenodo -> data/raw/KuaiRand-Pure/data
+python -m pytest tests                        # 30 tests, synthetic data only
 ```
 
-If Zenodo is missing, `prepare` writes a tiny synthetic Pure-shaped dataset so the agent can still run end-to-end.
+Published baselines (from the starter-kit folder):
 
-Official split:
+```bash
+cd kuairand-starter-kit
+python baseline.py --data_dir ../data/raw/KuaiRand-Pure/data --model fm
+cd ..
+```
 
-| Split | Source |
+The scored pipeline, stage by stage (every command is also in the leaderboard
+file, next to the number it produced):
+
+```bash
+python scripts/official_lgbm.py --build --past     # past-only feature cache
+python scripts/official_fm.py                      # FM feature (5-fold OOF on train, full model on valid/test)
+python scripts/official_lgbm.py --train --past --name p4_ease \
+  --features base,item,user,author,ua,uv,utag,vside,vstat,uside,ud,utab,utags,itemcf,fm,sess,ease \
+  --lr 0.02 --num_leaves 63 --ff 0.4 --bagging 0.8 --min_data 200
+# seeds 1-4: add --seed N.  rank members: --objective lambdarank --trunc 10 --ff 0.5 (+ seeds)
+python scripts/official_predict_test.py --quiet --name <each member>
+python scripts/official_aggregate.py --name gbdt5v2 --members p4_ease,p4_ease_s1,p4_ease_s2,p4_ease_s3,p4_ease_s4
+python scripts/official_aggregate.py --name rank3  --members p_rank_t10,p3_rank_ff05,p3_rank_s1
+python scripts/official_final.py                   # 0.80·gbdt5v2 + 0.20·rank3 -> preds/FINAL_*.npy + final.json, scored with evaluate.py
+python scripts/official_bootstrap.py               # paired user bootstrap of (final - FM) on test -> bootstrap.json
+python scripts/official_runlog.py                  # regenerate logs/official_runs.jsonl from results/official/*.json
+python scripts/official_runlog_md.py               # render it as logs/RUN_LOG.md
+```
+
+Trained boosters (20–25 MB each) are not committed; the scripts rebuild them.
+`official_runlog.py` compiles the run log from the result artifacts, so the log
+cannot drift from the numbers it cites.
+
+## Repository map
+
+| Path | Role |
 |---|---|
-| train | `log_standard_4_08_to_4_21_pure.csv` |
-| val | first 50% of `log_standard_4_22_to_5_08_pure.csv` by `time_ms` |
-| test | last 50% — **do not use until** `scripts/final_eval_test.py` |
+| `kuairand-starter-kit/` | official baseline and evaluator, **unmodified** |
+| `scripts/official_*.py` | the scored pipeline: feature cache, FM feature, LightGBM / lambdarank members, test prediction, aggregation, blend, run-log compiler |
+| `results/official/` | every sweep run (`*.json`), `leaderboard.md`, `final.json` |
+| `logs/official_runs.jsonl` | the required per-iteration log (header: protocol, convergence rule, caps; footer: resource use); `logs/RUN_LOG.md` is the same log as a table |
+| `docs/devpost_description.md`, `docs/video/` | submission text; the demo video and the three scripts that generate it from real repository numbers |
+| `agent/`, `src/`, `configs/`, `docs/history/BOT.md` | the v0 harness from before the starter kit was published — see below |
+| `tests/` | 30 tests on synthetic data: the official evaluator vs the vectorized early-stopping metric, past-only train statistics, the blend recipe, plus the v0 leak guards and split hygiene |
 
-## Run the agent
+## History: the pre-starter-kit protocol (superseded, kept for the record)
 
-Fresh run on **real** KuaiRand-Pure (wipes stale synthetic logs):
+The first days of the hackathon predate the official starter kit. The
+`agent/loop.py` catalog runner (`python scripts/run_bot.py`) targeted a sketch
+of the task — `is_click` label, NDCG@10 / Recall@50, train-only vocab — and
+produced a LightGBM that scored hidden-test **NDCG@10 0.8341** vs popularity
+0.8156 (`results/real_val_leaderboard.md`). Those numbers are on a different
+label and metric and are **not comparable** to the official results above; they
+are not the submission. Once the organizers published `kuairand-starter-kit/`,
+everything above was rebuilt on its protocol (see the note at the top of
+`PROBLEM.md`).
 
-```powershell
-$env:PYTHONPATH = (Get-Location).Path
-python scripts/run_bot.py
-```
+## Errata
 
-Or:
-
-```powershell
-python -m agent.loop --fresh
-```
-
-Hypothesis order (see `agent/catalog.py`):
-
-0. Inspect split / impression-list lengths
-1. Popularity (probe, not the official baseline)
-2. DeepFM + click BCE ← **official-style baseline** (CPU: 2 epochs, 250k rows)
-3. LightGBM + item statistics
-4. Multi-task DeepFM (skipped unless CUDA is available)
-
-Agent **selects val-best by NDCG@10**. Recall@50 is still reported, but on this split it saturates because most users have ≤50 val impressions.
-
-Real-val: popularity 0.8239 → DeepFM 0.8325 → GBDT 0.841210 → gbdt_rerank 0.841693 → gbdt_side 0.842276 → **gbdt_inlist_res 0.842328**.  
-Hidden test 0.8341 is still the older frozen GBDT; this run did not re-score test. See `results/real_val_leaderboard.md`.
-
-**Demo video:** https://youtu.be/OoPYcCveBfw — 3:00, narrated, subtitled.
-Source file `docs/video/recagent_demo.mp4`,
-generated by `scripts/video_tts.py` → `video_scenes.py` → `video_assemble.py`
-from `docs/video/narration.json` and real repository numbers. See
-`docs/video/README.md`.
-
-Logs: `logs/runs.jsonl`  
-Val best: `results/val_best.json`  
-Baseline: `results/baseline.json`
-
-Single experiment:
-
-```powershell
-python -m src.train --model popularity
-python -m src.train --model deepfm
-python -m src.train --model gbdt
-python -m src.train --model multitask
-```
-
-## Hidden test (once)
-
-```powershell
-python scripts/final_eval_test.py
-```
-
-## Metrics
-
-Users with no click are skipped. Remaining users are macro-averaged.
-
-- Official pair: NDCG@10 and Recall@50
-- `score = 0.5 * NDCG@10 + 0.5 * Recall@50` (write-up)
-- `primary = NDCG@10` (model selection — val lists are short, median ~5)
-
-Convergence: validation NDCG@10 improvement `< 0.001` for 3 explore steps after the baseline (Starter Kit ε/N were unpublished).
-
-## Tests
-
-```powershell
-python -m pytest tests -q
-```
-
-## Deliverables mapping
-
-| Track 2 ask | Where |
-|---|---|
-| Written description | Devpost + this README |
-| Public repo | this tree |
-| Run logs | `logs/runs.jsonl` |
-| Final checkpoint | `results/*.pt` / `gbdt.txt` |
-| Resource use | `gpu_hours` and `tokens` fields in the log |
+Discrepancies found in the submitted material after the deadline are listed in
+[`docs/ERRATA.md`](docs/ERRATA.md) rather than quietly corrected — the
+convergence rule's minimum-iteration floor contradicting the stop event, the
+rule having been formalized mid-run, the hidden test having been scored twice
+in the project's history (both events are in the log), and the stale sections
+in the submitted README. No number in `final.json` or the run log changed.
 
 ## Limitations
 
-- 4GB VRAM; small embeddings and 6 epochs.
-- Bonus 1k/27k not attempted by default.
-- No external LLM required; catalog is the autonomous policy.
+- Sequence modeling is shallow: exposure-only session features were flat, and
+  the CPU budget ruled out trained sequence models (a small DIN-style model
+  scored 0.6011 standalone and did not enter the blend).
+- The convergence rule (ε = 0.0005, N = 4, ≥ 30 iterations) was formalized
+  mid-run and is declared as such in the log header; a production agent would
+  fix it before the first iteration.
+- Bonus benchmarks (KuaiRand-1k / 27k) were not attempted on this hardware.
+
+## Demo video
+
+`docs/video/recagent_demo.mp4` (3:00, narrated, subtitled) is generated by
+`scripts/video_tts.py` → `video_scenes.py` → `video_assemble.py` from
+`docs/video/narration.json` and the real numbers in `results/official/` and the
+run log; the assembler deletes any cut that misses 3:00. Details in
+[`docs/video/README.md`](docs/video/README.md).

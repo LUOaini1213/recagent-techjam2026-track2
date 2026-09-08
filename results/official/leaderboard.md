@@ -22,6 +22,12 @@ baseline** (attainable range per organizers: random 0.4753 → label-perfect
 gbdt5v2 = 5-seed rank-average of `p4_ease` (all features incl. EASE + session
 groups); rank3 = 3 lambdarank variants.
 
+**Significance.** Paired user-level bootstrap on the test set (2,000 resamples
+of 23,875 users, same draw for both systems; per-user pieces verified against
+`evaluate.py` on the full sample): final − FM(reproduced 0.5943) = +0.0072
+primary, 95% CI [+0.0058, +0.0086], P(Δ ≤ 0) = 0/2000. GAUC and nDCG@5
+components in `results/official/bootstrap.json` (`scripts/official_bootstrap.py`).
+
 ## What mattered (in order of impact)
 
 1. **Past-only train features** (`--past`): every aggregate feature for a train
@@ -82,6 +88,35 @@ statistic over evaluation-window labels — a hard violation. It is used nowhere
 KuaiRand-Pure also has no impression-position column, so position-bias
 debiasing would require a fabricated proxy; not pursued.
 
+## Post-submission analysis (not part of the scored run)
+
+Added after the 2026-09-01 deadline for the record. Neither changes the
+submission; both are reproducible from committed artifacts.
+
+**Significance of the delta.** See the bootstrap paragraph above:
++0.0072 primary, 95% CI [+0.0058, +0.0086], 0 of 2,000 resamples ≤ 0.
+
+**How much the dataset's video-statistics table is worth.**
+`video_features_statistic_pure.csv` ships with KuaiRand and its collection
+period is not documented, so `s_longtime_rate` and the rest of the `vstat`
+group cannot be date-bounded the way the logs can. It is platform-wide traffic
+rather than the sampled log re-aggregated — median `show_cnt` 4,529 against a
+median of 57 impressions per video across the whole 04/08–05/08 log. Retraining
+the winning configuration with the whole group removed:
+
+| Configuration | features | valid primary |
+|---|---:|---:|
+| `p4_ease` (as submitted) | 99 | 0.6080 |
+| `p9_no_vstat` (no `vstat` group) | 83 | 0.6042 |
+| FM baseline | — | 0.6016 |
+
+The group is worth −0.0038 of validation primary; without it the model still
+clears the baseline, by a smaller margin. Command:
+
+```powershell
+python scripts/official_lgbm.py --train --past --name p9_no_vstat --features base,item,user,author,ua,uv,utag,vside,uside,ud,utab,utags,itemcf,fm,sess,ease --lr 0.02 --num_leaves 63 --ff 0.4 --bagging 0.8 --min_data 200
+```
+
 ## Pitfalls fixed along the way
 
 - Item-item CF leave-user-out: subtracting self-similarity is not enough — the
@@ -107,7 +142,7 @@ python scripts/official_lgbm.py --train --past --name p4_ease --features base,it
 python scripts/official_predict_test.py --quiet --name <each member>
 python scripts/official_aggregate.py --name gbdt5v2 --members p4_ease,p4_ease_s1,p4_ease_s2,p4_ease_s3,p4_ease_s4
 python scripts/official_aggregate.py --name rank3 --members p_rank_t10,p3_rank_ff05,p3_rank_s1
-# FINAL = 0.80*rank01(gbdt5v2) + 0.20*rank01(rank3) — results/official/final.json
+python scripts/official_final.py                   # FINAL = 0.80*rank01(gbdt5v2) + 0.20*rank01(rank3) -> preds/FINAL_*.npy + final.json, scored with evaluate.py
 python scripts/official_runlog.py                  # regenerate logs/official_runs.jsonl
 ```
 

@@ -32,7 +32,7 @@ stalls on camera. Keep terminal font ≥16pt — judges may watch on a laptop.
 > So we built an agent that runs that loop by itself. It reads the problem,
 > reproduces the official baseline, then proposes its own hypotheses, writes
 > the code, trains, scores itself on the official metric, and decides what to
-> try next. Seventeen iterations. Zero lines of code written by a human.
+> try next. Twenty-three iterations. Zero lines of code written by a human.
 
 **Visuals**
 - Cut to the agent architecture title card.
@@ -81,7 +81,7 @@ stalls on camera. Keep terminal font ≥16pt — judges may watch on a laptop.
 > metric-aware weighting scheme, and a freshness experiment — and it records
 > all three as failures, because they were.
 >
-> Finally it declares convergence under the rule it fixed in advance, names its
+> Finally it declares convergence under its stopping rule, names its
 > best validation checkpoint, and scores the hidden test set exactly once.
 
 **Visuals** (85 seconds — keep it moving, 6 beats)
@@ -110,7 +110,7 @@ stalls on camera. Keep terminal font ≥16pt — judges may watch on a laptop.
 > not one point zero. A perfect ranking scores 0.8645, because a quarter of
 > users have no positive label at all. Against that real range, we move the
 > baseline's share from thirty-one percent to thirty-two point four. All of it
-> on eight CPU cores, in four and a half hours.
+> on eight CPU cores, in about three and a half hours.
 
 **Visuals**
 - Results table, rows appearing one at a time:
@@ -118,7 +118,7 @@ stalls on camera. Keep terminal font ≥16pt — judges may watch on a laptop.
 - Then a horizontal range bar: `random 0.4753 ——— FM ——— Ours ——— ceiling 0.8645`
   with our marker sliding into place. **This visual is what makes the delta read
   as meaningful rather than small — do not skip it.**
-- Bottom strip: `17 iterations · 0 manual code edits · CPU only · 4.5 h`.
+- Bottom strip: `23 iterations · 0 manual code edits · CPU only · ~3.5 h active`.
 
 ---
 
@@ -142,9 +142,9 @@ stalls on camera. Keep terminal font ≥16pt — judges may watch on a laptop.
 
 | Claim | Where |
 |---|---|
-| test primary 0.6015 (GAUC 0.6697, nDCG@5 0.5333) | `results/official/final.json` |
+| test primary 0.6015 (GAUC 0.66965, nDCG@5 0.53332) | `results/official/final.json` |
 | FM baseline 0.5946 test | `results/official/official_kit_baselines.json` |
 | valid 0.6081 | `results/official/final.json` |
-| 17 scored iterations, caps 50 / 6 h | `logs/official_runs.jsonl` |
+| 23 scored iterations, caps 50 / 6 h | `logs/official_runs.jsonl` |
 | leak: 0.5738 → 0.5993 recovery | `logs/official_runs.jsonl` iterations 2–3 |
 | row counts 1,141,112 / 124,909 / 170,588 | build output, matches starter kit |

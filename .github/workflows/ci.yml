@@ -1,0 +1,30 @@
+name: ci
+
+# No dataset, no model training: the tests run on synthetic frames, and the
+# final-score check verifies that the committed FINAL_*.npy are exactly the
+# documented blend of the committed group predictions (scoring itself needs the
+# KuaiRand-Pure labels, which the check skips when the feature cache is absent).
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install the CPU wheel of torch, then the pinned requirements
+        run: |
+          pip install --index-url https://download.pytorch.org/whl/cpu torch
+          pip install -r requirements.txt
+      - name: Tests (synthetic data only)
+        run: python -m pytest tests
+      - name: Final submission reproduces from the committed predictions
+        run: python scripts/official_final.py --check
+      - name: Run log renders
+        run: python scripts/official_runlog_md.py --stdout > /dev/null

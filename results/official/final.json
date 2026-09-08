@@ -17,7 +17,8 @@
       "p3_rank_ff05",
       "p3_rank_s1"
     ],
-    "combine": "rank01-transform each member, equal-weight within group, then weighted sum"
+    "combine": "rank01-transform each member, equal-weight within group, then weighted sum",
+    "reproduce": "python scripts/official_final.py"
   },
   "baseline": {
     "fm_published": {
@@ -40,6 +41,14 @@
       "users": 23875,
       "rows": 170588
     }
+  },
+  "artifacts_sha256": {
+    "gbdt5v2_valid.npy": "d1af2ccfee906c7c309f344601ef4802206857716b8a398e05ba294a3c030a4a",
+    "rank3_valid.npy": "aed0acf9d8d3a2e9e0e8a373b0f3bf14c1f4ba1bb87254d80afb7b8dc8caf859",
+    "FINAL_valid.npy": "d23b05a44fc979f221585c3805b1ec5bab9328372d2172a22ab10df20ff61b5d",
+    "gbdt5v2_test.npy": "61098d0c2a17d60f0eba98f4464bdf11ec0bed8a9f4d149d5332878b2e61f087",
+    "rank3_test.npy": "2854126677810228f9f0195331014a3ec04896ab7cd573d20ae14f522500f8da",
+    "FINAL_test.npy": "51acf148476be3b178a6c8c570729913a88c7ff0dc04d140615ece40ca1ee14f"
   },
   "delta_test_primary_vs_published_fm": 0.006886
 }

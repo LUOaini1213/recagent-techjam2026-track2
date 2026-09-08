@@ -1,0 +1,37 @@
+{
+  "note": "label-perfect = score each impression by its own label; random = uniform noise, mean of 5 seeds; official evaluate.py, unmodified",
+  "valid": {
+    "rows": 124909,
+    "users": 22377,
+    "positive_rate": 0.3133,
+    "users_with_no_positive": 6785,
+    "share_no_positive": 0.3032,
+    "users_all_positive": 2663,
+    "share_all_positive": 0.119,
+    "label_perfect": {
+      "GAUC": 1.0,
+      "nDCG@5": 0.6968,
+      "primary": 0.8484
+    },
+    "random_primary_mean_of_5_seeds": 0.4836
+  },
+  "test": {
+    "rows": 170588,
+    "users": 23875,
+    "positive_rate": 0.3135,
+    "users_with_no_positive": 6472,
+    "share_no_positive": 0.2711,
+    "users_all_positive": 2202,
+    "share_all_positive": 0.0922,
+    "label_perfect": {
+      "GAUC": 1.0,
+      "nDCG@5": 0.7289,
+      "primary": 0.8645
+    },
+    "random_primary_mean_of_5_seeds": 0.4757,
+    "position_in_range": {
+      "fm_published_0.5946": 0.3058,
+      "final_0.6015": 0.3236
+    }
+  }
+}

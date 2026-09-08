@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from src.data.inlist import INLIST_NUM, add_inlist_features
 from src.data.side import LEAK_COLS
@@ -10,7 +11,10 @@ from src.eval.metrics import ranking_metrics
 def test_inlist_features_ignore_clicks_and_exclude_leaks():
     raw = Path("data/raw/KuaiRand-Pure/data")
     vocab = Path("data/processed/vocab.json")
-    val = pd.read_parquet("data/processed/val.parquet").head(50).copy()
+    val_path = Path("data/processed/val.parquet")
+    if not (raw.exists() and vocab.exists() and val_path.exists()):
+        pytest.skip("needs the processed KuaiRand-Pure artifacts of the v0 harness")
+    val = pd.read_parquet(val_path).head(50).copy()
     flipped = val.copy()
     flipped["is_click"] = 1 - flipped["is_click"]
     a, cats, nums = add_inlist_features(val, raw, vocab)

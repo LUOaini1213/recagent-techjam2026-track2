@@ -1,0 +1,34 @@
+{
+  "method": "paired user-level bootstrap, 2000 resamples of 23875 test users with replacement, seed 0; per-user pieces checked against the official evaluate.py on the full sample",
+  "point_estimate": {
+    "final_primary": 0.601486,
+    "fm_repro_primary": 0.59432,
+    "fm_published_primary": 0.5946
+  },
+  "delta_final_minus_fm_repro": {
+    "primary": {
+      "mean": 0.00718,
+      "ci95": [
+        0.00578,
+        0.00863
+      ],
+      "p_delta_le_0": 0.0
+    },
+    "GAUC": {
+      "mean": 0.00902,
+      "ci95": [
+        0.00713,
+        0.01087
+      ],
+      "p_delta_le_0": 0.0
+    },
+    "nDCG@5": {
+      "mean": 0.00535,
+      "ci95": [
+        0.00403,
+        0.00663
+      ],
+      "p_delta_le_0": 0.0
+    }
+  }
+}
