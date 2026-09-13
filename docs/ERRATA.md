@@ -5,20 +5,28 @@ listed here rather than quietly corrected.
 
 Two of the three artefacts are dated, external and left exactly as submitted:
 the Devpost entry, and the published video (youtu.be/OoPYcCveBfw, rendered
-2026-09-01). The third is this repository, and it is not frozen. It was
-published after the deadline with everything before that collapsed into one
-commit: the root commit (`git log --oneline | tail -1`) is dated 2026-09-08 and
-`git show --stat` on it adds all 187 files at once. Nothing here preserves the
-tree as it stood on 09-01, and no tag or branch claims to. Each item below that
-has since been corrected on `main` says so, and says what the submitted version
-said.
+2026-09-01). The third is this repository, and it is not frozen — but the
+submitted tree is still in it and can be checked out. `main` runs back past the
+deadline: its root commit is `78873a3` (2026-09-01 03:14:57 UTC, 161 files),
+followed the same morning by `32f752d` (03:20:02) and `f0ed066` (03:22:17).
+`f0ed066` is the tree as it stood at submission; everything after it is
+post-deadline work, beginning with `45b3105` and `42fc934` on 2026-09-08, so
+`git diff f0ed066 HEAD` is the whole of what has changed since. Each item below
+that has since been corrected on `main` says so, and says what the submitted
+version said.
 
 No score moved. `results/official/final.json` and `logs/official_runs.jsonl`
 carry the metrics they carried at submission, and
 `scripts/official_final.py --check` re-derives the submission from the
 committed group predictions and rescores it against `final.json` with the
-official evaluator. The one field of the log that did change after the
-deadline is the human-intervention count in its header — item 5.
+official evaluator. What did change in the log after the deadline, all of it in
+`45b3105`: the header's `human_interventions` (3 → 5) and the wording of its
+`human_interventions_note` — item 5 — plus a `wall_seconds_total` field on 17
+of the 23 iteration lines, which the compiler sums from the per-run
+`wall_seconds` that the `results/official/*.json` already carried at
+submission. `final.json` likewise only gained fields — a `reproduce` command
+and the `artifacts_sha256` block — with no value edited. Nothing else in either
+file differs from `f0ed066`.
 
 ## 1. The convergence rule's minimum-iteration floor contradicts the stop event
 
@@ -78,12 +86,11 @@ footer's `human_interventions_detail` quotes all five and is the correct count.
 Both numbers refer to goal-level directives; manual edits to code, features or
 parameters were zero in every version.
 
-Corrected since, and this is the one number that changed on `main` after the
-deadline: the header of `logs/official_runs.jsonl` (and therefore the `HEADER`
-dict in `scripts/official_runlog.py` that it is compiled from), its footer,
-`logs/RUN_LOG.md` line 10 and `docs/devpost_description.md` all read 5. The
-per-iteration `"human_interventions": 0` on every iteration line is a different
-field and is unchanged.
+Corrected since: the header of `logs/official_runs.jsonl` (and therefore the
+`HEADER` dict in `scripts/official_runlog.py` that it is compiled from), its
+footer, `logs/RUN_LOG.md` line 10 and `docs/devpost_description.md` all read 5.
+The per-iteration `"human_interventions": 0` on every iteration line is a
+different field and is unchanged.
 
 ## 6. Stale numbers in the shooting script
 

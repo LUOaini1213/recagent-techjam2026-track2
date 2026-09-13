@@ -196,7 +196,7 @@ cannot drift from the numbers it cites without CI saying so. Same for
 | Path | Role |
 |---|---|
 | `kuairand-starter-kit/` | official baseline and evaluator, **unmodified** |
-| `scripts/official_*.py` | the scored pipeline: feature cache, FM feature, LightGBM / lambdarank members, test prediction, aggregation, blend, reference points, labels, run-log compiler. Four of them take `--check` and run in CI |
+| `scripts/official_*.py` | the scored pipeline: feature cache, FM feature, LightGBM / lambdarank members, test prediction, aggregation, blend, reference points, labels, run-log compiler. Four of them take `--check`: three in the `ci` badge on every push, and `official_labels.py --check` in the separate `labels` workflow |
 | `results/official/` | every sweep run (`*.json`), `leaderboard.md`, `final.json`, `ceiling.json`, the six prediction `.npy` and the labels `.npz` the checks score against |
 | `logs/official_runs.jsonl` | the required per-iteration log (header: protocol, convergence rule, caps; footer: resource use); `logs/RUN_LOG.md` is the same log as a table |
 | `docs/devpost_description.md`, `docs/video/` | submission text; the demo video and the three scripts that generate it from real repository numbers |
