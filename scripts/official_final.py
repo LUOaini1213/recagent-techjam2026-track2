@@ -11,12 +11,14 @@ The recipe is the one recorded in final.json:
 where gbdt5v2 and rank3 are the equal-weight rank averages that
 official_aggregate.py wrote from their members (5 LightGBM seeds; 3 lambdarank
 variants). Only the two aggregate prediction files per split are needed, so
-the headline number can be recomputed without retraining anything. Scoring
-needs the labels, which live in the feature cache built from the public
-KuaiRand-Pure download (scripts/download_kuairand.py, then
-official_lgbm.py --build --past); without the cache, --check still verifies
-that the blend reproduces the committed FINAL_*.npy bit for bit and that the
-artifact hashes match.
+the headline number can be recomputed without retraining anything.
+
+Scoring needs the labels. They come from the feature cache when it has been
+built (scripts/download_kuairand.py, then official_lgbm.py --build --past),
+and otherwise from results/official/labels_valid_test.npz, the 140 KB
+(user_id, long_view) slice that scripts/official_labels.py derives from the
+same public download. So --check recomputes GAUC / nDCG@5 / primary and holds
+them against final.json to 5e-7 on a bare checkout, with no dataset present.
 """
 import argparse
 import hashlib
@@ -30,6 +32,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'kuairand-starter-kit'))
 sys.path.insert(0, os.path.join(ROOT, 'scripts'))
 from evaluate import evaluate  # noqa: E402  (official scorer, unmodified)
+import official_labels  # noqa: E402  (committed labels + their digest guard)
 
 OUT = os.path.join(ROOT, 'results', 'official')
 PREDS = os.path.join(OUT, 'preds')
@@ -72,19 +75,30 @@ def load_group(split):
 
 
 def labels(split):
+    """Ground truth for one split: the feature cache when it has been built,
+    otherwise the committed npz — official_labels.load() refuses to hand it
+    over unless its bytes match the digests recorded in that script."""
     for cache in CACHES:
         p = os.path.join(cache, f'{split}.parquet')
         if os.path.exists(p):
             import pandas as pd
             df = pd.read_parquet(p, columns=['user_id', 'long_view'])
             return df['user_id'].to_numpy(), df['long_view'].to_numpy().astype(np.float64)
-    return None, None
+    uid, y = official_labels.split_labels(split)
+    if uid is None:
+        return None, None
+    return uid, y.astype(np.float64)
 
 
 def score(split, preds):
     uid, y = labels(split)
     if uid is None:
         return None
+    if len(uid) != len(preds):
+        # A shifted or truncated label array scores to a plausible-looking
+        # wrong number instead of raising, so refuse the pair outright.
+        raise SystemExit(f'{split}: {len(uid)} labels vs {len(preds)} predictions '
+                         f'- refusing to score a misaligned pair')
     m = evaluate(uid.tolist(), y.tolist(), preds.tolist())
     return {'GAUC': round(m['GAUC'], 6), 'nDCG@5': round(m['nDCG@5'], 6),
             'primary': round(m['primary'], 6), 'users': int(m.get('users', len(set(uid.tolist())))),
@@ -143,8 +157,12 @@ def check():
             problems.append(f'FINAL_{split}.npy is missing')
         m = result['splits'][split]['metrics']
         if m is None:
-            print(f'{split}: labels not available (no feature cache) — scoring skipped; '
-                  f'run scripts/download_kuairand.py and official_lgbm.py --build --past to score')
+            # The labels ship with the repository, so "cannot score" means an
+            # artifact is missing, not that this checkout is unequipped. Fail
+            # rather than let --check quietly degrade to the blend-only check.
+            problems.append(f'{split}: no labels to score with — '
+                            f'results/official/labels_valid_test.npz is missing '
+                            f'(rebuild it with scripts/official_labels.py)')
             continue
         print(f"{split}: GAUC {m['GAUC']:.5f}  nDCG@5 {m['nDCG@5']:.5f}  primary {m['primary']:.4f}")
         if committed:

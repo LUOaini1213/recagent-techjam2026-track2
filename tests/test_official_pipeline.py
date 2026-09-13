@@ -1,10 +1,11 @@
 """Tests for the scored pipeline in scripts/official_*.py.
 
 They run on synthetic frames — no dataset, no trained models — and pin down
-the three claims the README makes about the pipeline: the vectorized
+the claims the README makes about the pipeline: the vectorized
 early-stopping metric equals the official evaluator, train-row statistics in
-past mode use strictly earlier days only, and the final blend is the recipe
-final.json says it is.
+past mode use strictly earlier days only, the final blend is the recipe
+final.json says it is, and the committed labels that let CI rescore the
+headline are the ones scripts/official_labels.py records.
 """
 import os
 
@@ -14,6 +15,7 @@ import pytest
 
 from evaluate import evaluate  # kuairand-starter-kit, via pytest.ini pythonpath
 import official_final
+import official_labels
 from official_blend import rank01, rank_within
 from official_lgbm import OfficialFeval, _train_sc
 
@@ -127,3 +129,40 @@ def test_bootstrap_resample_is_paired_and_order_free():
     assert abs(ob.aggregate(*pieces, perm)[2] - full[2]) < 1e-12  # same users, any order
     dup = np.repeat(np.arange(200), 2)
     assert abs(ob.aggregate(*pieces, dup)[2] - full[2]) < 1e-12   # duplicating every user is a no-op
+
+
+def test_committed_labels_match_the_digests_recorded_in_the_script():
+    # The npz is what lets --check rescore the headline without the dataset,
+    # so an edited label file must not be silently scored against.
+    if not os.path.exists(official_labels.NPZ):
+        pytest.skip('committed labels npz not present')
+    arrays = official_labels.load()
+    for key, (dtype, rows, sha) in official_labels.EXPECTED.items():
+        a = arrays[key]
+        assert a.dtype == np.dtype(dtype) and len(a) == rows
+        assert official_labels.digest(a) == sha
+    for split, rows in (('valid', 124909), ('test', 170588)):
+        uid, y = official_labels.split_labels(split)
+        assert len(uid) == len(y) == rows
+        assert set(np.unique(y).tolist()) <= {0, 1}
+        assert np.all(np.diff(uid) >= 0)  # user-contiguous, as the evaluator groups
+
+
+def test_load_refuses_a_labels_file_that_does_not_match_its_digest(tmp_path, monkeypatch):
+    if not os.path.exists(official_labels.NPZ):
+        pytest.skip('committed labels npz not present')
+    with np.load(official_labels.NPZ) as z:
+        arrays = {k: z[k].copy() for k in z.files}
+    arrays['test_long_view'][0] ^= 1
+    tampered = tmp_path / 'labels.npz'
+    np.savez_compressed(tampered, **arrays)
+    monkeypatch.setattr(official_labels, 'NPZ', str(tampered))
+    with pytest.raises(SystemExit):
+        official_labels.load()
+
+
+def test_score_refuses_labels_and_predictions_of_different_lengths(monkeypatch):
+    monkeypatch.setattr(official_final, 'labels',
+                        lambda split: (np.zeros(5, dtype=np.int32), np.zeros(5)))
+    with pytest.raises(SystemExit):
+        official_final.score('test', np.zeros(4))
