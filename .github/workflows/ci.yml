@@ -1,9 +1,15 @@
 name: ci
 
-# No dataset, no model training: the tests run on synthetic frames, and the
-# final-score check verifies that the committed FINAL_*.npy are exactly the
-# documented blend of the committed group predictions (scoring itself needs the
-# KuaiRand-Pure labels, which the check skips when the feature cache is absent).
+# No dataset download and no model training. The tests run on synthetic
+# frames; the artifact checks run on what is committed:
+#   * the two group predictions per split re-derive FINAL_*.npy bit for bit;
+#   * results/official/labels_valid_test.npz (140 KB of user_id + long_view)
+#     rescores those predictions with the untouched starter-kit evaluator and
+#     holds GAUC / nDCG@5 / primary against final.json to 5e-7, so this badge
+#     covers the headline test 0.6015, not only the blend arithmetic;
+#   * the run log and its rendered table are recompiled and diffed.
+# The labels themselves are re-derived from the md5-pinned public download by
+# the separate labels.yml workflow.
 
 on:
   push:
@@ -24,7 +30,9 @@ jobs:
           pip install -r requirements.txt
       - name: Tests (synthetic data only)
         run: python -m pytest tests
-      - name: Final submission reproduces from the committed predictions
+      - name: Final submission re-derives and rescores to final.json
         run: python scripts/official_final.py --check
-      - name: Run log renders
-        run: python scripts/official_runlog_md.py --stdout > /dev/null
+      - name: Run log is what the result artifacts compile to
+        run: python scripts/official_runlog.py --check
+      - name: RUN_LOG.md is what the run log renders to
+        run: python scripts/official_runlog_md.py --check
