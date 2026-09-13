@@ -224,8 +224,11 @@ rule having been formalized mid-run, the hidden test having been scored twice
 in the project's history (both events are in the log), the stale sections in
 the submitted README, and the attainable-range floor that the submitted
 material quoted as 0.4753 while the only measurement in the repository says
-0.4757. No metric in `final.json` or the run log changed; the one field of the
-log that did change after the deadline is named in ERRATA item 5.
+0.4757. No metric in `final.json` or the run log changed. What did change in the
+log after the deadline is listed at the top of ERRATA: the header
+`human_interventions` count and its note, and a `wall_seconds_total` field
+added to 17 of the 23 iteration rows, summed from per-run `wall_seconds`
+that were already in `results/official/*.json` at submission.
 
 ## Limitations
 
