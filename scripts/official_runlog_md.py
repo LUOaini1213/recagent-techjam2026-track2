@@ -2,6 +2,7 @@
 
     python scripts/official_runlog_md.py            # writes logs/RUN_LOG.md
     python scripts/official_runlog_md.py --stdout   # print instead
+    python scripts/official_runlog_md.py --check    # re-render and diff; exit 1 on drift
 
 The JSONL is the deliverable (compiled from results/official/*.json by
 official_runlog.py); this file is a view of it and carries no number that is
@@ -143,11 +144,45 @@ def render(rows):
     return '\n'.join(out)
 
 
+def check(text):
+    """Re-render in memory and diff against the committed table."""
+    if not os.path.exists(MD):
+        print(f'MISMATCH: {MD} is missing')
+        return 1
+    # Text mode, so a CRLF working copy on Windows compares equal to the LF
+    # form render() emits.
+    with open(MD, encoding='utf-8') as fh:
+        have = fh.read()
+    if have == text:
+        print(f'{MD} matches what logs/official_runs.jsonl renders to')
+        return 0
+    print('MISMATCH: logs/RUN_LOG.md is not what logs/official_runs.jsonl renders '
+          'to (regenerate with: python scripts/official_runlog_md.py)')
+    have_lines, want_lines = have.splitlines(), text.splitlines()
+    if len(have_lines) != len(want_lines):
+        print(f'  line count: committed {len(have_lines)}, re-rendered {len(want_lines)}')
+    shown = 0
+    for n, (a, b) in enumerate(zip(have_lines, want_lines), start=1):
+        if a == b:
+            continue
+        shown += 1
+        if shown > 3:
+            print('  ... further differing lines suppressed')
+            break
+        print(f'  line {n} committed:   {a[:160]}')
+        print(f'  line {n} re-rendered: {b[:160]}')
+    return 1
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--stdout', action='store_true')
+    ap.add_argument('--stdout', action='store_true', help='print instead of writing')
+    ap.add_argument('--check', action='store_true',
+                    help='verify the committed table against the JSONL instead of rewriting it')
     a = ap.parse_args()
     text = render(load())
+    if a.check:
+        return check(text)
     if a.stdout:
         sys.stdout.write(text)
         return 0
