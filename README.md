@@ -74,8 +74,9 @@ All four run in CI on every push, and the second one is the headline itself:
 it rebuilds `FINAL_*.npy` as `0.80·rank01(gbdt5v2) + 0.20·rank01(rank3)` and
 checks it bit for bit, then scores that blend with the untouched
 `kuairand-starter-kit/evaluate.py` and compares GAUC / nDCG@5 / primary with
-`final.json` to 5e-7. Change the `0.601486` in `final.json` by one digit and
-CI goes red.
+`final.json` to 5e-7 — including the `+0.006886` improvement over the published
+FM baseline, recomputed rather than read. Change the `0.601486` in `final.json`
+by one digit and CI goes red.
 
 Scoring needs labels, and they are committed too:
 [`results/official/labels_valid_test.npz`](results/official/labels_valid_test.npz)

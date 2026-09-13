@@ -170,6 +170,18 @@ def check():
                 want = committed['metrics'][split][key]
                 if abs(want - m[key]) > 5e-7:
                     problems.append(f'{split} {key}: recomputed {m[key]} vs final.json {want}')
+    # The headline improvement is quoted on its own everywhere, so check the
+    # stored field rather than leaving it implied by the two scores above.
+    test = result['splits']['test']['metrics']
+    if committed and test and 'delta_test_primary_vs_published_fm' in committed:
+        want = committed['delta_test_primary_vs_published_fm']
+        got = round(test['primary'] - PUBLISHED_FM['test'], 6)
+        if abs(want - got) > 5e-7:
+            problems.append(f'delta_test_primary_vs_published_fm: recomputed {got} '
+                            f'(test primary - published FM {PUBLISHED_FM["test"]}) '
+                            f'vs final.json {want}')
+        else:
+            print(f'test primary - published FM {PUBLISHED_FM["test"]}: {got:+.6f}')
     if committed and 'artifacts_sha256' in committed:
         for name, digest in committed['artifacts_sha256'].items():
             if result['artifacts'].get(name) != digest:
