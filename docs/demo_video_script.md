@@ -115,7 +115,7 @@ stalls on camera. Keep terminal font ≥16pt — judges may watch on a laptop.
 **Visuals**
 - Results table, rows appearing one at a time:
   `pop 0.5715` / `FM 0.5946` / `Ours 0.6015`.
-- Then a horizontal range bar: `random 0.4753 ——— FM ——— Ours ——— ceiling 0.8645`
+- Then a horizontal range bar: `random 0.4757 ——— FM ——— Ours ——— ceiling 0.8645`
   with our marker sliding into place. **This visual is what makes the delta read
   as meaningful rather than small — do not skip it.**
 - Bottom strip: `23 iterations · 0 manual code edits · CPU only · ~3.5 h active`.

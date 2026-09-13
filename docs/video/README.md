@@ -60,7 +60,7 @@ A cut that misses 3:00 is **deleted**, not shipped.
 ## Two deliberate design calls
 
 - **The magnifier inset in the Results scene.** Baseline 0.5946 and ours
-  0.6015 are only 1.8% apart on the 0.4753 → 0.8645 range, so plotting both on
+  0.6015 are only 1.8% apart on the 0.4757 → 0.8645 range, so plotting both on
   one axis puts the markers on top of each other and reads as "no progress".
   The inset magnifies exactly that gap and labels it `+0.0069`, while the main
   axis still carries the honest message: the ceiling is 0.8645, not 1.0.

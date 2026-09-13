@@ -7,7 +7,7 @@ checkpoint at run stop (FAQ 2.9.1c), scored once on test (2026-09-01).
 
 | Model | valid | test |
 |---|---|---|
-| random (published) | — | primary 0.4753 |
+| random (uniform noise, mean of 5 seeds — measured) | 0.4836 | primary 0.4757 |
 | pop (published) | 0.5807 | 0.5715 |
 | FM starter kit (published) | 0.6016 | 0.5946 |
 | FM torch reimpl (`scripts/official_fm.py`) | 0.6019 | 0.5943 |
@@ -17,8 +17,11 @@ checkpoint at run stop (FAQ 2.9.1c), scored once on test (2026-09-01).
 | **FINAL: 0.80·gbdt5v2 + 0.20·rank3** | **0.6081** | **0.6015** |
 
 Final test: GAUC 0.6697, nDCG@5 0.5333. **+0.0069 primary over the FM
-baseline** (attainable range per organizers: random 0.4753 → label-perfect
-0.8645; the baseline sits at 30.7% of that range, this submission at 32.4%).
+baseline**. Attainable range on this split, measured by
+`scripts/official_ceiling.py` into `results/official/ceiling.json`: random
+0.4757 → label-perfect 0.8645, which puts the baseline at 30.6% of the range
+(`position_in_range.fm_published_0.5946` = 0.3058) and this submission at 32.4%
+(`final_0.6015` = 0.3236).
 gbdt5v2 = 5-seed rank-average of `p4_ease` (all features incl. EASE + session
 groups); rank3 = 3 lambdarank variants.
 
