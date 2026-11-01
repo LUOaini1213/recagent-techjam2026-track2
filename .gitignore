@@ -47,7 +47,7 @@ data/interim/
 docs/video/frames/
 docs/video/seg_*.mp3
 
-# stale hand-off archive
+# packaged archives are rebuilt on demand, never committed
 *.zip
 
 .idea/

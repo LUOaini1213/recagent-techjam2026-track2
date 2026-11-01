@@ -301,7 +301,7 @@ def scene_stop(d, t, dur):
 
 def scene_results(d, t, dur):
     d.text((110, 80), 'Results on the hidden test set', font=F_H1, fill=FG)
-    rows = [('random', 0.4753, DIM, 0.4),
+    rows = [('random', 0.4757, DIM, 0.4),
             ('popularity baseline', 0.5715, DIM, 1.2),
             ('FM — official baseline', 0.5946, WARN, 2.0),
             ('ours', 0.6015, GOOD, 3.0)]
@@ -321,10 +321,10 @@ def scene_results(d, t, dur):
                '27% of users have no positive label — a perfect ranking scores 0.8645',
                font=F_BODY, fill=fade(DIM, a))
         x0, x1, y = 170, 1180, 760
-        lo, hi = 0.4753, 0.8645
+        lo, hi = 0.4757, 0.8645
         d.line([x0, y, x1, y], fill=fade(DIM, a), width=4)
         grow = ease(min(1.0, max(0.0, (t - 5.4) / 1.0)))
-        for label, v, col, up in (('random', 0.4753, DIM, False),
+        for label, v, col, up in (('random', 0.4757, DIM, False),
                                   ('baseline', 0.5946, WARN, True),
                                   ('perfect', 0.8645, DIM, True)):
             px = x0 + (x1 - x0) * (v - lo) / (hi - lo)
@@ -353,7 +353,12 @@ def scene_results(d, t, dur):
             d.text((ix1 - 110, iy - 40), 'ours', font=F_LABEL, fill=fade(GOOD, b))
             d.text((ix0 + 128, iy + 60), '+0.0069', font=font(32, bold=True),
                    fill=fade(GOOD, b))
-            d.text((130, 856), '31.0% of the attainable range  ->  32.4%',
+            # The published cut (youtu.be/OoPYcCveBfw) renders "31.0% ->
+            # 32.4%" here. 31.0% is wrong on any floor: against the measured
+            # random 0.4757 the FM baseline sits at 30.6%. Corrected here, the
+            # published cut left as submitted, disclosed in docs/ERRATA.md
+            # item 8 - same treatment as the narration erratum (item 4).
+            d.text((130, 856), '30.6% of the attainable range  ->  32.4%',
                    font=F_H2, fill=fade(GOOD, b))
     if t > 9.6:
         a = ease(min(1.0, (t - 9.6) / 0.6))

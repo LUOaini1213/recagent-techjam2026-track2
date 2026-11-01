@@ -19,8 +19,8 @@ wall-clock of the 6 h budget, CPU only) and strict test-label hygiene
 checkpoint per FAQ 2.9.1c, scored once on test).
 
 For scale: on this benchmark a perfect ranking scores only 0.8645 (27% of
-users have no positive label) and random scores 0.4753, so the FM baseline
-already captures 30.7% of the attainable range and this submission reaches
+users have no positive label) and random scores 0.4757, so the FM baseline
+already captures 30.6% of the attainable range and this submission reaches
 32.4%.
 
 ## How it addresses the problem statement

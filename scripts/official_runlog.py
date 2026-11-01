@@ -6,8 +6,18 @@ metrics pulled from results/official/*.json so the log is reproducible from
 the artifacts it points at. Seed replicates of one hypothesis are grouped
 into a single iteration (sub_runs listed), matching the convergence rule's
 notion of a scored iteration = one hypothesis tested.
+
+    python scripts/official_runlog.py           # (re)write logs/official_runs.jsonl
+    python scripts/official_runlog.py --check   # recompile in memory and diff; exit 1 on drift
+
+--check is what CI runs: it is the guarantee behind the README's claim that
+the log cannot drift from the numbers it cites. Edit a metric in any
+results/official/*.json, or a line of the log itself, and it goes red.
 """
-import json, os, sys
+import argparse
+import json
+import os
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'results', 'official')
@@ -147,7 +157,8 @@ ITERS = [
 ]
 
 
-def main():
+def compile_lines():
+    """The whole log as a list of records, built from results/official/*.json."""
     lines = [HEADER]
     it = 0
     for names, hyp, why, change in ITERS:
@@ -169,8 +180,11 @@ def main():
                            ('learning_rate', 'num_leaves', 'feature_fraction',
                             'bagging_fraction', 'min_data_in_leaf', 'seed')},
             })
-            best = max((s for s in subs if s.get('valid')),
-                       key=lambda s: s['valid']['primary'], default=None)
+        # Best sub-run of THIS iteration; computed after the loop so a missing
+        # artifact in the last position cannot leave a previous iteration's
+        # winner standing.
+        best = max((s for s in subs if s.get('valid')),
+                   key=lambda s: s['valid']['primary'], default=None)
         secs = [s['wall_seconds'] for s in subs
                 if isinstance(s.get('wall_seconds'), (int, float))]
         lines.append({
@@ -191,14 +205,75 @@ def main():
                 if e.get('type') == 'iteration':
                     e['iter'] = it
                 lines.append(e)
-    os.makedirs(os.path.dirname(LOG), exist_ok=True)
-    with open(LOG, 'w', encoding='utf-8') as fh:
-        for ln in lines:
-            fh.write(json.dumps(ln) + '\n')
+    return lines
+
+
+def render(lines):
+    return ''.join(json.dumps(ln) + '\n' for ln in lines)
+
+
+def summary(lines):
     n_iter = sum(1 for l in lines if l.get('type') == 'iteration')
-    print(f"wrote {LOG}: {n_iter} scored iterations + header "
-          f"(cap 50), {len(lines)} lines total")
+    return f'{n_iter} scored iterations + header (cap 50), {len(lines)} lines total'
+
+
+def _excerpt(a, b, width=90):
+    """The two lines windowed around their first differing character."""
+    i = next((k for k in range(min(len(a), len(b))) if a[k] != b[k]), min(len(a), len(b)))
+    lo = max(0, i - width // 3)
+    cut = lambda s: ('...' if lo else '') + s[lo:lo + width] + ('...' if len(s) > lo + width else '')
+    return cut(a), cut(b), i
+
+
+def check():
+    """Recompile in memory and diff against the committed log."""
+    lines = compile_lines()
+    want = render(lines)
+    if not os.path.exists(LOG):
+        print(f'MISMATCH: {LOG} is missing')
+        return 1
+    # Text mode, so a CRLF working copy on Windows compares equal to the LF
+    # form the compiler emits.
+    with open(LOG, encoding='utf-8') as fh:
+        have = fh.read()
+    if have == want:
+        print(f'{LOG} matches what results/official/*.json compile to: {summary(lines)}')
+        return 0
+    have_lines, want_lines = have.splitlines(), want.splitlines()
+    print('MISMATCH: logs/official_runs.jsonl is not what the result artifacts '
+          'compile to (regenerate with: python scripts/official_runlog.py)')
+    if len(want_lines) != len(have_lines):
+        print(f'  line count: committed {len(have_lines)}, recompiled {len(want_lines)}')
+    shown = 0
+    for n, (a, b) in enumerate(zip(have_lines, want_lines), start=1):
+        if a == b:
+            continue
+        shown += 1
+        if shown > 3:
+            print('  ... further differing lines suppressed')
+            break
+        ea, eb, col = _excerpt(a, b)
+        print(f'  line {n}, first difference at column {col + 1}:')
+        print(f'    committed:  {ea}')
+        print(f'    recompiled: {eb}')
+    return 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('--check', action='store_true',
+                    help='verify the committed log against the artifacts instead of rewriting it')
+    a = ap.parse_args()
+    if a.check:
+        return check()
+    lines = compile_lines()
+    os.makedirs(os.path.dirname(LOG), exist_ok=True)
+    with open(LOG, 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write(render(lines))
+    print(f'wrote {LOG}: {summary(lines)}')
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

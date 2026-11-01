@@ -28,16 +28,17 @@ validation-best checkpoint at run stop (FAQ 2.9.1c).
 
 | Model | valid | test |
 |---|---:|---:|
-| random (published) | — | 0.4753 |
+| random (uniform noise, mean of 5 seeds — measured here) | 0.4836 | 0.4757 |
 | pop (published) | 0.5807 | 0.5715 |
 | FM starter kit (published) | 0.6016 | 0.5946 |
 | **RecAgent final blend** | **0.6081** | **0.6015** |
 
 **+0.0069 test primary over the FM baseline** (test GAUC 0.6697, nDCG@5 0.5333).
 For scale: a label-perfect ranking scores 0.8645 on this benchmark (27% of users
-have no positive label), so the baseline sits at 30.7% of the attainable range
-and this submission at 32.4% — computed by `scripts/official_ceiling.py`, artifact
-[`results/official/ceiling.json`](results/official/ceiling.json). Final recipe:
+have no positive label), so on the 0.4757 → 0.8645 attainable range the baseline
+sits at **30.6%** and this submission at **32.4%**. Every figure in that sentence
+is a field of [`results/official/ceiling.json`](results/official/ceiling.json),
+which `scripts/official_ceiling.py` writes from the labels. Final recipe:
 `results/official/final.json`.
 
 Is the delta more than noise? A paired user-level bootstrap (2,000 resamples of
@@ -59,19 +60,37 @@ Budget actually used, against the track's hard caps:
 
 ## Verify the headline without retraining
 
+No dataset download, no training — everything the checks need is committed:
+
 ```bash
 pip install -r requirements.txt
-python -m pytest tests                     # 30 tests on synthetic data, ~12 s: official metric vs the vectorized one, past-only stats, the blend recipe
-python scripts/official_final.py --check   # FINAL_*.npy == 0.80·rank01(gbdt5v2) + 0.20·rank01(rank3), bit for bit, from the committed group predictions
+python -m pytest tests                       # 33 tests on synthetic data (2 need the raw dataset and skip)
+python scripts/official_final.py --check     # re-derive FINAL_*.npy from the group predictions, then rescore it
+python scripts/official_runlog.py --check    # recompile the run log from results/official/*.json
+python scripts/official_runlog_md.py --check # re-render logs/RUN_LOG.md from that log
 ```
 
-Both run in CI on every push. The committed artifacts are the two group
-predictions and the final blend per split (`results/official/preds/`, 7 MB) and
-`logs/official_runs.jsonl`; the trained boosters are not (20–25 MB each; the
-pipeline rebuilds them). To *rescore* the blend rather than only re-derive it,
-add the labels: `python scripts/download_kuairand.py` then
-`python scripts/official_lgbm.py --build --past`, and the same `--check` prints
-valid 0.6081 / test 0.6015 against `final.json`.
+All four run in CI on every push, and the second one is the headline itself:
+it rebuilds `FINAL_*.npy` as `0.80·rank01(gbdt5v2) + 0.20·rank01(rank3)` and
+checks it bit for bit, then scores that blend with the untouched
+`kuairand-starter-kit/evaluate.py` and compares GAUC / nDCG@5 / primary with
+`final.json` to 5e-7 — including the `+0.006886` improvement over the published
+FM baseline, recomputed rather than read. Change the `0.601486` in `final.json`
+by one digit and CI goes red.
+
+Scoring needs labels, and they are committed too:
+[`results/official/labels_valid_test.npz`](results/official/labels_valid_test.npz)
+— 140 KB, the `user_id` and `long_view` columns of the 124,909 valid and
+170,588 test rows, in the row order of the prediction files. It is derived, not
+authoritative, so `scripts/official_labels.py --check` rebuilds it from the
+public KuaiRand-Pure release (`scripts/download_kuairand.py`, md5-pinned) and
+fails on a single differing byte; that runs in the `labels` workflow. Editing
+the npz to manufacture a score fails first against the SHA-256 digests recorded
+in `scripts/official_labels.py`.
+
+The other committed artifacts are the two group predictions and the final blend
+per split (`results/official/preds/`, 7.1 MB) and `logs/official_runs.jsonl`.
+The trained boosters are not (20–25 MB each; the pipeline rebuilds them).
 
 ## What "autonomous" means here
 
@@ -134,7 +153,7 @@ git clone https://github.com/LUOaini1213/recagent-techjam2026-track2
 cd recagent-techjam2026-track2
 pip install -r requirements.txt
 python scripts/download_kuairand.py          # KuaiRand-Pure from Zenodo -> data/raw/KuaiRand-Pure/data
-python -m pytest tests                        # 30 tests, synthetic data only
+python -m pytest tests                        # 33 tests, synthetic data only
 ```
 
 Published baselines (from the starter-kit folder):
@@ -160,25 +179,29 @@ python scripts/official_aggregate.py --name gbdt5v2 --members p4_ease,p4_ease_s1
 python scripts/official_aggregate.py --name rank3  --members p_rank_t10,p3_rank_ff05,p3_rank_s1
 python scripts/official_final.py                   # 0.80·gbdt5v2 + 0.20·rank3 -> preds/FINAL_*.npy + final.json, scored with evaluate.py
 python scripts/official_bootstrap.py               # paired user bootstrap of (final - FM) on test -> bootstrap.json
+python scripts/official_ceiling.py                 # label-perfect and random reference points -> ceiling.json
+python scripts/official_labels.py                  # (user_id, long_view) of valid/test -> labels_valid_test.npz
 python scripts/official_runlog.py                  # regenerate logs/official_runs.jsonl from results/official/*.json
 python scripts/official_runlog_md.py               # render it as logs/RUN_LOG.md
 ```
 
 Trained boosters (20–25 MB each) are not committed; the scripts rebuild them.
-`official_runlog.py` compiles the run log from the result artifacts, so the log
-cannot drift from the numbers it cites.
+`official_runlog.py` compiles the run log from the result artifacts, and
+`official_runlog.py --check` recompiles it in memory and diffs, so the log
+cannot drift from the numbers it cites without CI saying so. Same for
+`official_runlog_md.py --check` and the rendered table.
 
 ## Repository map
 
 | Path | Role |
 |---|---|
 | `kuairand-starter-kit/` | official baseline and evaluator, **unmodified** |
-| `scripts/official_*.py` | the scored pipeline: feature cache, FM feature, LightGBM / lambdarank members, test prediction, aggregation, blend, run-log compiler |
-| `results/official/` | every sweep run (`*.json`), `leaderboard.md`, `final.json` |
+| `scripts/official_*.py` | the scored pipeline: feature cache, FM feature, LightGBM / lambdarank members, test prediction, aggregation, blend, reference points, labels, run-log compiler. Four of them take `--check`: three in the `ci` badge on every push, and `official_labels.py --check` in the separate `labels` workflow |
+| `results/official/` | every sweep run (`*.json`), `leaderboard.md`, `final.json`, `ceiling.json`, the six prediction `.npy` and the labels `.npz` the checks score against |
 | `logs/official_runs.jsonl` | the required per-iteration log (header: protocol, convergence rule, caps; footer: resource use); `logs/RUN_LOG.md` is the same log as a table |
 | `docs/devpost_description.md`, `docs/video/` | submission text; the demo video and the three scripts that generate it from real repository numbers |
 | `agent/`, `src/`, `configs/`, `docs/history/BOT.md` | the v0 harness from before the starter kit was published — see below |
-| `tests/` | 30 tests on synthetic data: the official evaluator vs the vectorized early-stopping metric, past-only train statistics, the blend recipe, plus the v0 leak guards and split hygiene |
+| `tests/` | 33 tests on synthetic data: the official evaluator vs the vectorized early-stopping metric, past-only train statistics, the blend recipe, the committed labels' digests, plus the v0 leak guards and split hygiene |
 
 ## History: the pre-starter-kit protocol (superseded, kept for the record)
 
@@ -198,8 +221,14 @@ Discrepancies found in the submitted material after the deadline are listed in
 [`docs/ERRATA.md`](docs/ERRATA.md) rather than quietly corrected — the
 convergence rule's minimum-iteration floor contradicting the stop event, the
 rule having been formalized mid-run, the hidden test having been scored twice
-in the project's history (both events are in the log), and the stale sections
-in the submitted README. No number in `final.json` or the run log changed.
+in the project's history (both events are in the log), the stale sections in
+the submitted README, and the attainable-range floor that the submitted
+material quoted as 0.4753 while the only measurement in the repository says
+0.4757. No metric in `final.json` or the run log changed. What did change in the
+log after the deadline is listed at the top of ERRATA: the header
+`human_interventions` count and its note, and a `wall_seconds_total` field
+added to 17 of the 23 iteration rows, summed from per-run `wall_seconds`
+that were already in `results/official/*.json` at submission.
 
 ## Limitations
 

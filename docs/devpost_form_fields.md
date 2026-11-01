@@ -47,8 +47,8 @@ the official FM baseline of 0.5946 — an improvement of +0.0069.**
 
 That number deserves its scale. On this benchmark a perfect ranking scores only
 **0.8645**, because 27% of users have no positive label at all and 9% are all
-positive; random scoring sits at 0.4753. The official baseline therefore
-already captures 30.7% of the attainable range, and this submission reaches
+positive; random scoring sits at 0.4757. The official baseline therefore
+already captures 30.6% of the attainable range, and this submission reaches
 **32.4%**. The ceiling is not 1.0, and progress should be read against 0.8645.
 
 The run finished in **23 scored iterations** of the 50 allowed and about
