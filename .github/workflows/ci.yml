@@ -7,7 +7,11 @@ name: ci
 #     rescores those predictions with the untouched starter-kit evaluator and
 #     holds GAUC / nDCG@5 / primary against final.json to 5e-7, so this badge
 #     covers the headline test 0.6015, not only the blend arithmetic;
-#   * the run log and its rendered table are recompiled and diffed.
+#   * ceiling.json (the attainable range the README quotes) is recomputed
+#     from the same committed labels;
+#   * the run log and its rendered table are recompiled and diffed;
+#   * tests/test_readme_numbers.py holds the README's numbers to the artifacts.
+# Windows runs too, because the results were produced on Windows.
 # The labels themselves are re-derived from the md5-pinned public download by
 # the separate labels.yml workflow.
 
@@ -17,8 +21,15 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,6 +43,8 @@ jobs:
         run: python -m pytest tests
       - name: Final submission re-derives and rescores to final.json
         run: python scripts/official_final.py --check
+      - name: Attainable range recomputes to ceiling.json
+        run: python scripts/official_ceiling.py --check
       - name: Run log is what the result artifacts compile to
         run: python scripts/official_runlog.py --check
       - name: RUN_LOG.md is what the run log renders to

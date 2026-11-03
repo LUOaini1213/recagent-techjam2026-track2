@@ -10,10 +10,14 @@ official evaluator on the full sample before any resampling.
 
 Inputs (all produced by the pipeline; nothing here touches test labels for
 any decision — the submission was frozen on 2026-09-01):
-  labels  data/interim/official_feats_past/test.parquet  (user-contiguous)
+  labels  data/interim/official_feats_past/test.parquet  (user-contiguous), or
+          the committed results/official/labels_valid_test.npz, same row order
   ours    results/official/preds/FINAL_test.npy
   FM      results/official/fm_feats/test.npy   (our torch-FM reproduction,
-          test primary 0.5943 vs the published 0.5946)
+          test primary 0.5943 vs the published 0.5946). Not committed, so
+          rerunning this script needs the dataset and scripts/official_fm.py;
+          tests/test_readme_numbers.py only ties bootstrap.json to final.json
+          and the README.
 """
 import json
 import os
@@ -25,7 +29,9 @@ from scipy.stats import rankdata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'kuairand-starter-kit'))
+sys.path.insert(0, os.path.join(ROOT, 'scripts'))
 from evaluate import evaluate  # noqa: E402  official scorer, unmodified
+import official_labels  # noqa: E402  (committed labels + their digest guard)
 
 OUT = os.path.join(ROOT, 'results', 'official', 'bootstrap.json')
 REPS, SEED = 2000, 0
@@ -67,13 +73,23 @@ def aggregate(npos, auc, ndcg, idx):
 
 
 def main():
-    te = pd.read_parquet(os.path.join(ROOT, 'data', 'interim',
-                                      'official_feats_past', 'test.parquet'),
-                         columns=['user_id', 'long_view'])
-    uid = te['user_id'].to_numpy()
-    y = te['long_view'].to_numpy().astype(np.float64)
+    cache = os.path.join(ROOT, 'data', 'interim', 'official_feats_past', 'test.parquet')
+    if os.path.exists(cache):
+        te = pd.read_parquet(cache, columns=['user_id', 'long_view'])
+        uid = te['user_id'].to_numpy()
+        y = te['long_view'].to_numpy().astype(np.float64)
+    else:
+        uid, y = official_labels.split_labels('test')
+        if uid is None:
+            raise SystemExit('no test labels: build the feature cache or restore '
+                             'results/official/labels_valid_test.npz')
+        y = y.astype(np.float64)
     ours = np.load(os.path.join(ROOT, 'results', 'official', 'preds', 'FINAL_test.npy'))
-    fm = np.load(os.path.join(ROOT, 'results', 'official', 'fm_feats', 'test.npy'))
+    fm_path = os.path.join(ROOT, 'results', 'official', 'fm_feats', 'test.npy')
+    if not os.path.exists(fm_path):
+        raise SystemExit(f'{os.path.relpath(fm_path, ROOT)} is not committed: run '
+                         'scripts/download_kuairand.py, then scripts/official_fm.py')
+    fm = np.load(fm_path)
 
     pieces = {}
     for name, s in (('final', ours), ('fm', fm)):

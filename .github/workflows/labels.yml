@@ -14,6 +14,15 @@ name: labels
 
 on:
   workflow_dispatch:
+  # Also on pull requests that touch what this workflow verifies, so the
+  # source-to-labels check is exercised before such a change merges. The
+  # README badge is ci.yml, so a Zenodo outage here never turns it red.
+  pull_request:
+    paths:
+      - results/official/labels_valid_test.npz
+      - scripts/official_labels.py
+      - scripts/download_kuairand.py
+      - .github/workflows/labels.yml
   schedule:
     # 03:17 UTC on the 1st of each month.
     - cron: "17 3 1 * *"
