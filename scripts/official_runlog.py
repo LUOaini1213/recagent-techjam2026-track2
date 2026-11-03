@@ -194,6 +194,10 @@ def compile_lines():
             # Training wall-clock of the iteration, summed over its sub-runs
             # (the per-run figure each results/official/*.json records).
             'wall_seconds_total': round(sum(secs), 1) if secs else None,
+            # A constant, not a measurement: the log is compiled after the
+            # run, so this field restates the self-reported "no manual edits"
+            # rather than recording each iteration independently (README,
+            # "What autonomous means here").
             'sub_runs': subs, 'human_interventions': 0,
         })
     # blend iterations + designation appended by finalize step

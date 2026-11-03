@@ -70,7 +70,9 @@ Four components, driven by the agent in a loop:
 
 The final submission is a rank-average blend: a five-seed LightGBM backbone at
 0.80 and lambdarank members at 0.20, designated as the validation-best
-checkpoint and scored on the hidden test exactly once.
+checkpoint and scored on the hidden test once (the test split was revealed
+twice in total: an interim blend was scored on 08-31, before the designation
+rule was published — docs/ERRATA.md item 3).
 
 **What actually moved the number, in order:**
 
@@ -145,7 +147,8 @@ hypotheses with their numbers and reasoning are more useful to the next person
 than a leaderboard row.
 
 Third: the discipline held. Every decision was made on validation. The hidden
-test was scored once, for the checkpoint that validation had already chosen.
+test was scored once for the checkpoint that validation had already chosen,
+and once before that for an interim blend (docs/ERRATA.md item 3).
 
 ## What we learned
 

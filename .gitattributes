@@ -1,0 +1,13 @@
+# Text files are stored and checked out with LF on every OS, so the --check
+# scripts that diff committed text (run log, RUN_LOG.md, README numbers) see
+# the same bytes on Windows and Linux.
+* text=auto eol=lf
+
+# Result and media binaries: never touch their bytes (SHA-256-pinned in
+# final.json and scripts/official_labels.py).
+*.npy -text
+*.npz -text
+*.png -text
+*.mp4 -text
+*.mp3 -text
+*.txt.gz -text
