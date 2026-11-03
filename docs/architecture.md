@@ -1,5 +1,12 @@
 # Architecture
 
+> **Superseded.** This page describes the v0 harness (`agent/loop.py`,
+> `is_click` label, NDCG@10 / Recall@50) from before the organizers published
+> the starter kit. It is not the submission and its numbers are not comparable
+> to the official `long_view` / mean(GAUC, nDCG@5) results. For the submitted
+> pipeline see the README's Method section and
+> [`results/official/leaderboard.md`](../results/official/leaderboard.md).
+
 The agent treats KuaiRand ranking as an MLE loop, not a one-shot notebook.
 
 ```text

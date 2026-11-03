@@ -3,7 +3,10 @@
 Label `long_view`, within-user ranking, **primary = mean(GAUC, nDCG@5)**.
 Split: train 20220408–0421 / valid 0422–0428 / test 0429–0508.
 All tuning on valid; the designated submission is the validation-best
-checkpoint at run stop (FAQ 2.9.1c), scored once on test (2026-09-01).
+checkpoint at run stop (FAQ 2.9.1c), scored once on test (2026-09-01). The test
+split itself was revealed twice: the rows marked *interim reveal* below were
+scored on 08-31, before that designation rule was published
+([ERRATA 3](../../docs/ERRATA.md)).
 
 | Model | valid | test |
 |---|---|---|
@@ -11,9 +14,9 @@ checkpoint at run stop (FAQ 2.9.1c), scored once on test (2026-09-01).
 | pop (published) | 0.5807 | 0.5715 |
 | FM starter kit (published) | 0.6016 | 0.5946 |
 | FM torch reimpl (`scripts/official_fm.py`) | 0.6019 | 0.5943 |
-| LightGBM best single pre-EASE (`p3_ff04`) | 0.6067 | 0.5997 |
+| LightGBM best single pre-EASE (`p3_ff04`) | 0.6067 | 0.5997 (interim reveal) |
 | LightGBM + EASE single (`p4_ease`) | 0.6080 | — |
-| interim blend (frozen 08-31, superseded) | 0.6072 | 0.6007 |
+| interim blend (frozen 08-31, superseded) | 0.6072 | 0.6007 (interim reveal) |
 | **FINAL: 0.80·gbdt5v2 + 0.20·rank3** | **0.6081** | **0.6015** |
 
 Final test: GAUC 0.6697, nDCG@5 0.5333. **+0.0069 primary over the FM
@@ -53,9 +56,14 @@ components in `results/official/bootstrap.json` (`scripts/official_bootstrap.py`
    explicit threshold/margin features were flat on top of the full stack.
 3. **Regularization**: lr 0.02, 63 leaves, feature_fraction 0.4–0.5,
    bagging 0.8, min_data 200 (flat plateau 0.6064–0.6067 across that region).
-4. **Blending**: 5-seed rank-average backbone + 14% lambdarank diversity
-   (+0.0007 valid, +0.0006 test). Greedy blends over many individual models
-   scored higher on valid (0.6079) but were rejected as valid-overfit risk.
+4. **Blending**: the final recipe is 0.80 · 5-seed rank-average backbone
+   (`gbdt5v2`) + 0.20 · three lambdarank members (`rank3`), weight chosen on
+   valid. The +0.0007 valid / +0.0006 test previously quoted here for blending
+   belong to the superseded interim recipe (0.8575 · gbdt5 +
+   0.1425 · rank3, test from the 08-31 interim reveal); the final recipe's gain
+   over its backbone alone was not scored on test. Greedy blends over many
+   individual models scored higher on valid (0.6079) but were rejected as
+   valid-overfit risk.
 
 ## What was tried and did NOT work (all logged, none in the submission)
 
@@ -113,8 +121,10 @@ the winning configuration with the whole group removed:
 | `p9_no_vstat` (no `vstat` group) | 83 | 0.6042 |
 | FM baseline | — | 0.6016 |
 
-The group is worth −0.0038 of validation primary; without it the model still
-clears the baseline, by a smaller margin. Command:
+The group is worth −0.0038 of validation primary — more than half of the
+single model's +0.0064 margin over FM; without it the model still clears the
+baseline, by a smaller margin. Its test score was not measured (no further
+test reveal was made). The README lists this under Limitations. Command:
 
 ```powershell
 python scripts/official_lgbm.py --train --past --name p9_no_vstat --features base,item,user,author,ua,uv,utag,vside,uside,ud,utab,utags,itemcf,fm,sess,ease --lr 0.02 --num_leaves 63 --ff 0.4 --bagging 0.8 --min_data 200
@@ -149,6 +159,7 @@ python scripts/official_final.py                   # FINAL = 0.80*rank01(gbdt5v2
 python scripts/official_runlog.py                  # regenerate logs/official_runs.jsonl
 ```
 
-Full sweep history: `results/official/*.json` (40+ runs across three
-workflow-orchestrated sweeps: regularization/ablation, past-cache grid,
-ff-neighborhood + seeds).
+Full sweep history: `results/official/*.json` (56 training runs — one per file
+carrying a `best_iter`, not counting the post-deadline `p9_no_vstat` — across
+three workflow-orchestrated sweeps: regularization/ablation, past-cache grid,
+ff-neighborhood + seeds — plus targeted iterations).

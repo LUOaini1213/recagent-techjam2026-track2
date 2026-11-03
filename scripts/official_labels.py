@@ -52,6 +52,17 @@ EXPECTED = {
 }
 
 
+def rel(path):
+    """`path` relative to the repository for messages. os.path.relpath raises
+    ValueError on Windows when the two paths are on different drives (a pytest
+    tmp_path on C: and a checkout on D:, as on GitHub's Windows runners), which
+    would turn a refusal into a crash, so fall back to the absolute path."""
+    try:
+        return os.path.relpath(path, ROOT)
+    except ValueError:
+        return os.path.abspath(path)
+
+
 def digest(a):
     """SHA-256 of the array's raw little-endian bytes in C order."""
     return hashlib.sha256(np.ascontiguousarray(a).tobytes()).hexdigest()
@@ -91,10 +102,10 @@ def derive_from_cache(cache):
 def source():
     """(arrays, description) from whichever local source exists, else (None, why)."""
     if all(os.path.exists(os.path.join(DATA_DIR, f)) for f in LOGS):
-        return derive_from_raw(), f'the raw logs in {os.path.relpath(DATA_DIR, ROOT)}'
+        return derive_from_raw(), f'the raw logs in {rel(DATA_DIR)}'
     for cache in CACHES:
         if all(os.path.exists(os.path.join(cache, f'{s}.parquet')) for s in SPLITS):
-            return derive_from_cache(cache), f'the feature cache {os.path.relpath(cache, ROOT)}'
+            return derive_from_cache(cache), f'the feature cache {rel(cache)}'
     return None, ('no local source: run scripts/download_kuairand.py (or '
                   'scripts/official_lgbm.py --build --past)')
 
@@ -109,7 +120,7 @@ def load():
         a = arrays[key]
         if a.dtype != np.dtype(dtype) or len(a) != rows or digest(a) != sha:
             raise SystemExit(
-                f'{os.path.relpath(NPZ, ROOT)}: {key} does not match the digest '
+                f'{rel(NPZ)}: {key} does not match the digest '
                 f'recorded in scripts/official_labels.py - refusing to score '
                 f'against it. Rebuild it with scripts/official_labels.py.')
     return arrays
@@ -148,7 +159,7 @@ def check():
             elif not np.array_equal(committed[key], arrays[key]):
                 problems.append(f'{key}: committed npz differs from {where}')
     else:
-        problems.append(f'{os.path.relpath(NPZ, ROOT)} is missing')
+        problems.append(f'{rel(NPZ)} is missing')
     for p in problems:
         print('MISMATCH:', p)
     if problems:
