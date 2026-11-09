@@ -270,7 +270,7 @@ in the project's history (both events are in the log), the stale sections in
 the submitted README, and the attainable-range floor that the submitted
 material quoted as 0.4753 while the only measurement in the repository says
 0.4757, and (item 9) the "scored once" wording that outlived item 3 on
-`main` until 2026-11-03. No metric in `final.json` or the run log changed.
+`main` until the November 2026 review fixes. No metric in `final.json` or the run log changed.
 What did change in the log after the deadline is listed at the top of ERRATA:
 the header
 `human_interventions` count and its note, and a `wall_seconds_total` field

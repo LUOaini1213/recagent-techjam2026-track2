@@ -142,11 +142,11 @@ are left as submitted, as with item 4.
 The submitted README, leaderboard and Devpost text said in bold or in the
 opening paragraph that the hidden test split was "scored once", the video
 narration that the agent "scores the hidden test set exactly once", and the
-"scored once" wording outlived item 3 above on `main` until 2026-11-03. What
-was scored once is the designated checkpoint; the split was revealed twice
+"scored once" wording outlived item 3 above on `main` until the November 2026
+review fixes. What was scored once is the designated checkpoint; the split was revealed twice
 (item 3). The same review found two smaller drifts in the Devpost text: "~45
-hypotheses" (no artifact counts hypotheses; 56 training runs carry a
-`best_iter`, see item 1) and "a lambdarank diversity member" (the final blend
+hypotheses" (no artifact counts hypotheses; 56 in-run training runs
+carry a `best_iter`, 57 with the post-deadline `p9_no_vstat`; see item 1) and "a lambdarank diversity member" (the final blend
 has three, `rank3`, at weight 0.20). The leaderboard's blending line quoted the
 superseded interim recipe's gain (14%, +0.0007 valid / +0.0006 test).
 
@@ -154,7 +154,10 @@ Corrected since: `README.md`, `results/official/leaderboard.md`,
 `docs/devpost_description.md`, `docs/devpost_form_fields.md`,
 `docs/demo_video_script.md`, `docs/video/narration.json` and
 `scripts/video_scenes.py`. The Devpost entry and the published video are left
-as submitted, as with items 4 and 8. `tests/test_readme_numbers.py` now fails
+as submitted, as with items 4 and 8, and so are the committed
+`docs/video/voiceover.mp3`, `voiceover.srt` and `timing.json`, which still
+carry the old sentence because they were not regenerated from the corrected
+`narration.json`. `tests/test_readme_numbers.py` now fails
 if "scored once" returns without the two-reveal qualifier.
 
 ## What is *not* an erratum
