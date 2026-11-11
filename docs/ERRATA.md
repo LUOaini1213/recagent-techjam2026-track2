@@ -155,9 +155,12 @@ Corrected since: `README.md`, `results/official/leaderboard.md`,
 `docs/demo_video_script.md`, `docs/video/narration.json` and
 `scripts/video_scenes.py`. The Devpost entry and the published video are left
 as submitted, as with items 4 and 8, and so are the committed
-`docs/video/voiceover.mp3`, `voiceover.srt` and `timing.json`, which still
-carry the old sentence because they were not regenerated from the corrected
-`narration.json`. `tests/test_readme_numbers.py` now fails
+`docs/video/voiceover.mp3`, `docs/video/voiceover.srt` and
+`docs/demo_video_subs.srt`, which still carry the old sentence, and
+`docs/video/timing.json`, whose timings were measured on the old narration;
+none of them was regenerated from the corrected `narration.json`.
+`results/real_val_leaderboard.md` (the superseded v0 harness) now carries a
+banner saying so. `tests/test_readme_numbers.py` now fails
 if "scored once" returns without the two-reveal qualifier.
 
 ## What is *not* an erratum

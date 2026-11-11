@@ -1,5 +1,13 @@
 # Frozen LightGBM — val + one-shot hidden test
 
+> **Superseded.** This page is the v0 harness (`is_click` label, NDCG@10) from
+> before the organizers published the starter kit. The model called
+> "submission" below is not what was submitted, and "scored once" refers to
+> this v0 run only. The submitted `long_view` results, and the two reveals of
+> the official test split, are in
+> [`official/leaderboard.md`](official/leaderboard.md) and
+> [`docs/ERRATA.md`](../docs/ERRATA.md) item 3.
+
 Official date split. Hidden test scored **once** after val freeze.  
 Selection metric: **NDCG@10**.
 
