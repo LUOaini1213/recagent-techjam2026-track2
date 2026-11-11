@@ -295,7 +295,7 @@ def scene_stop(d, t, dur):
                colors={0: WARN, 4: GOOD})
     if t > 7.2:
         a = ease(min(1.0, (t - 7.2) / 0.6))
-        d.text((130, 620), 'hidden test evaluated exactly once',
+        d.text((130, 620), 'designated checkpoint tested once',
                font=font(40, bold=True), fill=fade(GOOD, a))
 
 

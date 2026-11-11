@@ -16,7 +16,9 @@ official FM baseline 0.5946 — +0.0069**, with the run staying inside the
 track's hard caps (23 scored iterations of the 50 allowed, ~3.5 h active
 wall-clock of the 6 h budget, CPU only) and strict test-label hygiene
 (validation-only tuning; the designated submission is the validation-best
-checkpoint per FAQ 2.9.1c, scored once on test).
+checkpoint per FAQ 2.9.1c, scored once on test; the test split was revealed
+twice in total, the first time on 08-31 for an interim blend before that rule
+was published — see docs/ERRATA.md item 3).
 
 For scale: on this benchmark a perfect ranking scores only 0.8645 (27% of
 users have no positive label) and random scores 0.4757, so the FM baseline
@@ -27,7 +29,7 @@ already captures 30.6% of the attainable range and this submission reaches
 
 - **Reproduce the baseline**: torch FM reimplementation matches the published
   numbers (valid 0.6019 vs 0.6016; test within the published seed std).
-- **Iterate autonomously**: the agent proposed and tested ~45 hypotheses
+- **Iterate autonomously**: the agent ran 56 training runs
   (grouped into 23 scored iterations — seed replicates and sweep members count
   as one iteration each) in three workflow-orchestrated sweeps plus targeted
   iterations. Highlights it
@@ -45,7 +47,8 @@ already captures 30.6% of the attainable range and this submission reaches
   - *EASE item-item model* (closed-form ridge) as features: +0.0013 single
     model, found and integrated in one iteration on CPU.
 - **Converged result**: final submission is a rank-average blend of a 5-seed
-  LightGBM backbone with a lambdarank diversity member, designated as the
+  LightGBM backbone (0.80) with three lambdarank diversity members (0.20),
+  designated as the
   validation-best checkpoint per FAQ 2.9.1(c).
 
 ## The demo video is also built by code

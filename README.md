@@ -1,4 +1,4 @@
-# RecAgent — Autonomous ML Research Agent
+# RecAgent — an LLM-driven ML experiment loop on KuaiRand-Pure
 
 > **TikTok TechJam 2026 result: this entry did not place.** The competition has
 > concluded and this submission was not among those selected. Everything below is
@@ -14,17 +14,27 @@
 [Leaderboard and reproduction](results/official/leaderboard.md) ·
 [Devpost description](docs/devpost_description.md)
 
-An agent that runs the MLE loop itself — inspect → feature → train → evaluate →
-reflect — on the official KuaiRand-Pure benchmark, and beats the organizers' FM
-baseline on the hidden test set without a human writing or editing a line of
-model code.
+**Built:** a LightGBM + lambdarank ranking pipeline for KuaiRand-Pure
+`long_view`, developed in an LLM-driven loop — Claude, run through Claude Code,
+proposed each hypothesis, wrote the code and read the official evaluator's
+numbers over 23 scored iterations (56 training runs). **Found:** the final blend
+scores **0.6015** test primary against the organizers' FM baseline at 0.5946
+(+0.0069; paired bootstrap 95% CI [+0.0058, +0.0086] against our FM
+reproduction). **Limits:** the test split was revealed twice in the project's
+history, the designated checkpoint once ([ERRATA 3](docs/ERRATA.md)); the
+undated `vstat` feature table is worth 0.0038 of the single model's validation
+primary and the test margin without it is unmeasured; "zero manual edits" is
+self-reported in the run log, not independently recorded.
 
 ## Result
 
 Scoring is the untouched starter kit: `kuairand-starter-kit/evaluate.py`, label
 `long_view`, within-user ranking, **primary = mean(GAUC, nDCG@5)**. Validation
-was used for every decision; the hidden test split was scored **once**, on the
-validation-best checkpoint at run stop (FAQ 2.9.1c).
+was used for every decision. The designated checkpoint — validation-best at run
+stop (FAQ 2.9.1c) — was scored on test **once**; the test split was revealed
+**twice** in total, because an interim reveal on 08-31 (the 0.6007 interim
+blend plus three reference models) came before the organizers published that
+designation rule ([ERRATA 3](docs/ERRATA.md)).
 
 | Model | valid | test |
 |---|---:|---:|
@@ -56,7 +66,7 @@ Budget actually used, against the track's hard caps:
 | scored iterations | **23** | 50 |
 | active wall-clock | **~3.5 h** | 6 h |
 | GPU | none (8-core CPU, 16 GB RAM) | — |
-| manual code / feature / hyperparameter edits | **0** | — |
+| manual code / feature / hyperparameter edits | **0** (self-reported) | — |
 
 ## Verify the headline without retraining
 
@@ -64,13 +74,17 @@ No dataset download, no training — everything the checks need is committed:
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests                       # 33 tests on synthetic data (2 need the raw dataset and skip)
+python -m pytest tests                       # 48 tests on synthetic data and committed artifacts (2 need the v0 dataset artifacts and skip)
 python scripts/official_final.py --check     # re-derive FINAL_*.npy from the group predictions, then rescore it
+python scripts/official_ceiling.py --check   # recompute the attainable range (ceiling.json) from the committed labels
 python scripts/official_runlog.py --check    # recompile the run log from results/official/*.json
 python scripts/official_runlog_md.py --check # re-render logs/RUN_LOG.md from that log
 ```
 
-All four run in CI on every push, and the second one is the headline itself:
+All five run in CI on every push (Ubuntu and Windows). `tests/test_readme_numbers.py`
+ties every number in the Result section and the first screen to the artifact
+it comes from, so editing one digit of this README turns CI red. The second
+command is the headline itself:
 it rebuilds `FINAL_*.npy` as `0.80·rank01(gbdt5v2) + 0.20·rank01(rank3)` and
 checks it bit for bit, then scores that blend with the untouched
 `kuairand-starter-kit/evaluate.py` and compares GAUC / nDCG@5 / primary with
@@ -84,13 +98,19 @@ Scoring needs labels, and they are committed too:
 170,588 test rows, in the row order of the prediction files. It is derived, not
 authoritative, so `scripts/official_labels.py --check` rebuilds it from the
 public KuaiRand-Pure release (`scripts/download_kuairand.py`, md5-pinned) and
-fails on a single differing byte; that runs in the `labels` workflow. Editing
+fails on a single differing byte; that runs in the
+[`labels` workflow](https://github.com/LUOaini1213/recagent-techjam2026-track2/actions/workflows/labels.yml)
+(monthly, on demand, and on any pull request that touches the labels, their
+scripts or the workflow). Editing
 the npz to manufacture a score fails first against the SHA-256 digests recorded
 in `scripts/official_labels.py`.
 
 The other committed artifacts are the two group predictions and the final blend
 per split (`results/official/preds/`, 7.1 MB) and `logs/official_runs.jsonl`.
-The trained boosters are not (20–25 MB each; the pipeline rebuilds them).
+The trained boosters are not (20–25 MB each; the pipeline rebuilds them), and
+neither are the FM reproduction's test predictions, so the bootstrap in
+`bootstrap.json` can only be recomputed after `scripts/official_fm.py` has run
+on the downloaded dataset; offline, the tests only tie it to `final.json`.
 
 ## What "autonomous" means here
 
@@ -103,11 +123,20 @@ thing that changed it between iterations.
 Humans gave goal-level directives only — five in total, all quoted in the log
 footer ("status?", "optimize to the best", "check the official standard online",
 "do it", "write the demo script"). Zero manual edits to code, features or
-parameters. Every scored iteration is one line in `logs/official_runs.jsonl`
-with the hypothesis, why, the change applied, valid GAUC / nDCG@5 / primary,
-errors and recovery, and wall-clock; seed replicates of one hypothesis are
-grouped into that iteration (40+ individual training runs sit in
-`results/official/*.json`).
+parameters — **a self-report**: the run log is compiled after the fact from
+`results/official/*.json` by `scripts/official_runlog.py`, which writes
+`"human_interventions": 0` on every iteration line as a constant, and the git
+history begins with one commit that adds the whole tree, so neither is an
+independent record of who typed what. The Claude Code session transcripts are
+not in the repository. The agent itself is that external tool; `agent/` here is
+the superseded v0 harness (see History).
+
+Every scored iteration is one line in `logs/official_runs.jsonl` with the
+hypothesis, why, the change applied, valid GAUC / nDCG@5 / primary, errors and
+recovery, and wall-clock; seed replicates of one hypothesis are grouped into
+that iteration (56 individual training runs sit in `results/official/*.json`,
+one per file carrying a `best_iter`, plus the post-deadline `p9_no_vstat`
+diagnostic).
 
 Three iterations worth reading in the log:
 
@@ -125,10 +154,11 @@ Three iterations worth reading in the log:
    freshness was worth **−0.0003**; window *length* is what matters. Worth at
    most +0.0005, not worth the FAQ 2.9.2 risk. Declined.
 
-After convergence the agent tested eight more hypotheses (sequence model,
-metric-aware weighting, per-user rank blending, multi-λ EASE, feature
-selection, CatBoost diversity, statistics freshness). All eight were negative
-or neutral and all are in the log — the plateau is measured, not assumed.
+After convergence the agent tested eight more hypotheses (a sequence model as
+a blend member, the same model's out-of-fold score as a feature, metric-aware
+weighting, per-user rank blending, multi-λ EASE, feature selection, CatBoost
+diversity, statistics freshness). All eight were negative or neutral and all
+are in the log — the plateau is measured, not assumed.
 
 ## Method (the final recipe)
 
@@ -142,6 +172,9 @@ impact, is in [`results/official/leaderboard.md`](results/official/leaderboard.m
 Rules audit: `log_random_4_22_to_5_08_pure.csv` is co-extensive with the
 valid+test window and is used nowhere; KuaiRand-1k / 27k are not used; test
 labels never touched model selection, early stopping or feature statistics.
+One feature source cannot be audited the same way: the `vstat` group comes from
+`video_features_statistic_pure.csv`, whose collection period is undocumented
+(see Limitations).
 
 ## Reproduce
 
@@ -153,7 +186,7 @@ git clone https://github.com/LUOaini1213/recagent-techjam2026-track2
 cd recagent-techjam2026-track2
 pip install -r requirements.txt
 python scripts/download_kuairand.py          # KuaiRand-Pure from Zenodo -> data/raw/KuaiRand-Pure/data
-python -m pytest tests                        # 33 tests, synthetic data only
+python -m pytest tests                        # 48 tests, no dataset needed
 ```
 
 Published baselines (from the starter-kit folder):
@@ -196,12 +229,12 @@ cannot drift from the numbers it cites without CI saying so. Same for
 | Path | Role |
 |---|---|
 | `kuairand-starter-kit/` | official baseline and evaluator, **unmodified** |
-| `scripts/official_*.py` | the scored pipeline: feature cache, FM feature, LightGBM / lambdarank members, test prediction, aggregation, blend, reference points, labels, run-log compiler. Four of them take `--check`: three in the `ci` badge on every push, and `official_labels.py --check` in the separate `labels` workflow |
+| `scripts/official_*.py` | the scored pipeline: feature cache, FM feature, LightGBM / lambdarank members, test prediction, aggregation, blend, reference points, labels, run-log compiler. Five of them take `--check`: four in the `ci` badge on every push, and `official_labels.py --check` in the separate `labels` workflow |
 | `results/official/` | every sweep run (`*.json`), `leaderboard.md`, `final.json`, `ceiling.json`, the six prediction `.npy` and the labels `.npz` the checks score against |
 | `logs/official_runs.jsonl` | the required per-iteration log (header: protocol, convergence rule, caps; footer: resource use); `logs/RUN_LOG.md` is the same log as a table |
 | `docs/devpost_description.md`, `docs/video/` | submission text; the demo video and the three scripts that generate it from real repository numbers |
 | `agent/`, `src/`, `configs/`, `docs/history/BOT.md` | the v0 harness from before the starter kit was published — see below |
-| `tests/` | 33 tests on synthetic data: the official evaluator vs the vectorized early-stopping metric, past-only train statistics, the blend recipe, the committed labels' digests, plus the v0 leak guards and split hygiene |
+| `tests/` | 48 tests: the official evaluator vs the vectorized early-stopping metric, past-only train statistics, the blend recipe, the committed labels' digests, the README's numbers against the artifacts, plus the v0 leak guards and split hygiene |
 
 ## History: the pre-starter-kit protocol (superseded, kept for the record)
 
@@ -215,6 +248,18 @@ are not the submission. Once the organizers published `kuairand-starter-kit/`,
 everything above was rebuilt on its protocol (see the note at the top of
 `PROBLEM.md`).
 
+## Data and attribution
+
+- **Dataset:** KuaiRand-Pure, from *KuaiRand: An Unbiased Sequential
+  Recommendation Dataset with Randomly Exposed Videos* (Gao et al., CIKM 2022,
+  [doi:10.1145/3511808.3557624](https://doi.org/10.1145/3511808.3557624)),
+  downloaded from [Zenodo record 10439422](https://zenodo.org/records/10439422),
+  which lists the licence as CC BY 4.0. `results/official/labels_valid_test.npz`
+  and the prediction files are derived from it.
+- **`kuairand-starter-kit/`** is the TechJam 2026 Track 2 organizers' starter
+  kit (baseline, data loader, `evaluate.py` and the published baseline
+  scores), vendored unmodified.
+
 ## Errata
 
 Discrepancies found in the submitted material after the deadline are listed in
@@ -224,14 +269,26 @@ rule having been formalized mid-run, the hidden test having been scored twice
 in the project's history (both events are in the log), the stale sections in
 the submitted README, and the attainable-range floor that the submitted
 material quoted as 0.4753 while the only measurement in the repository says
-0.4757. No metric in `final.json` or the run log changed. What did change in the
-log after the deadline is listed at the top of ERRATA: the header
+0.4757, and (item 9) the "scored once" wording that outlived item 3 on
+`main` until the November 2026 review fixes. No metric in `final.json` or the run log changed.
+What did change in the log after the deadline is listed at the top of ERRATA:
+the header
 `human_interventions` count and its note, and a `wall_seconds_total` field
 added to 17 of the 23 iteration rows, summed from per-run `wall_seconds`
 that were already in `results/official/*.json` at submission.
 
 ## Limitations
 
+- The `vstat` feature group comes from `video_features_statistic_pure.csv`, a
+  platform-wide statistics table with an undocumented collection period, so it
+  cannot be date-bounded to the train window the way the logs can, and it may
+  overlap valid/test. The starter kit's FM baseline does not read it.
+  Retraining the submitted single model without the group drops validation
+  primary from 0.6080 to **0.6042** (−0.0038, more than half of its +0.0064
+  margin over FM's 0.6016; still above FM). The test score without `vstat` was
+  never measured, and no extra test reveal was made to measure it. Details:
+  [leaderboard, post-submission analysis](results/official/leaderboard.md#post-submission-analysis-not-part-of-the-scored-run);
+  artifacts `results/official/p4_ease.json` and `p9_no_vstat.json`.
 - Sequence modeling is shallow: exposure-only session features were flat, and
   the CPU budget ruled out trained sequence models (a small DIN-style model
   scored 0.6011 standalone and did not enter the blend).

@@ -82,7 +82,7 @@ stalls on camera. Keep terminal font ≥16pt — judges may watch on a laptop.
 > all three as failures, because they were.
 >
 > Finally it declares convergence under its stopping rule, names its
-> best validation checkpoint, and scores the hidden test set exactly once.
+> best validation checkpoint, and scores that checkpoint on the hidden test set once.
 
 **Visuals** (85 seconds — keep it moving, 6 beats)
 1. `0:55` Terminal: `python scripts/official_lgbm.py --build --past` — rows
